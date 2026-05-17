@@ -1,0 +1,32 @@
+{
+  "name": "primrose-trusted-care",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Primrose Trusted Care — family-services marketing site (Node 22 + Angular 21 SSR).",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,magenta \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "node --watch server/src/standalone.js",
+    "dev:client": "npm run -w client start",
+    "build": "npm run -w client build",
+    "start": "node app.js",
+    "lint": "eslint . && npm run -w client lint",
+    "test": "npm run -w server test && npm run -w client test -- --watch=false",
+    "format": "prettier --write \"**/*.{js,ts,json,md,scss,html}\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "eslint": "^9.17.0",
+    "@eslint/js": "^9.17.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2"
+  }
+}

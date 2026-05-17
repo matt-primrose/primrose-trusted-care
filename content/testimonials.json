@@ -1,0 +1,26 @@
+{
+  "_note": "Placeholder testimonials. Replace with real, attributed quotes (with written consent) before launch.",
+  "testimonials": [
+    {
+      "id": "placeholder-1",
+      "quote": "We went from never knowing who was coming into our house to having someone we genuinely trust with our kids. The vetting matters — it's the only reason we'd consider letting someone else do bedtime.",
+      "attribution": "Jen K.",
+      "location": "Mesa, AZ",
+      "featured": true
+    },
+    {
+      "id": "placeholder-2",
+      "quote": "I needed a sitter on three days' notice and Primrose still found a great fit. Everyone they've sent has been on time, kind, and clearly experienced with kids.",
+      "attribution": "Marcos R.",
+      "location": "Gilbert, AZ",
+      "featured": true
+    },
+    {
+      "id": "placeholder-3",
+      "quote": "We use them for date nights and for pet sitting when we travel. Same vetting standard, same level of care. It's hard to overstate the peace of mind.",
+      "attribution": "Hannah & Drew T.",
+      "location": "Chandler, AZ",
+      "featured": false
+    }
+  ]
+}

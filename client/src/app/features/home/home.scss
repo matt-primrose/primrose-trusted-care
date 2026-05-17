@@ -1,0 +1,120 @@
+.hero {
+  background: linear-gradient(
+    180deg,
+    var(--color-brand-blush, #f8dce5) 0%,
+    var(--color-brand-rose, #eba3c2) 100%
+  );
+  padding: 4rem 1.25rem 5rem;
+  text-align: center;
+
+  .hero-inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-family: var(--font-display, 'Cinzel', serif);
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: var(--color-brand-rosewood, #8e5a5a);
+    margin: 0 0 1rem;
+    line-height: 1.1;
+  }
+
+  .lede {
+    font-size: 1.15rem;
+    color: var(--color-ui-text, #2a1f22);
+    margin: 0 0 2rem;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+
+  &.primary {
+    background: var(--color-brand-crimson, #d33041);
+    color: #fff;
+  }
+  &.ghost {
+    background: transparent;
+    color: var(--color-brand-rosewood, #8e5a5a);
+    border: 2px solid currentColor;
+  }
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.testimonials {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+
+  blockquote {
+    margin: 0 0 0.75rem;
+    font-style: italic;
+    color: var(--color-ui-text, #2a1f22);
+  }
+
+  .attribution {
+    margin: 0;
+    color: var(--color-brand-rosewood, #8e5a5a);
+    font-size: 0.9rem;
+  }
+}
+
+.category-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+
+  h3 {
+    margin: 0 0 0.25rem;
+    font-family: var(--font-display, 'Cinzel', serif);
+    color: var(--color-brand-rosewood, #8e5a5a);
+  }
+  .tagline {
+    margin: 0 0 0.75rem;
+    color: var(--color-brand-rosewood, #8e5a5a);
+    font-style: italic;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li {
+      padding: 0.25rem 0;
+      a {
+        color: var(--color-brand-crimson, #d33041);
+        text-decoration: none;
+        &:hover { text-decoration: underline; }
+      }
+    }
+  }
+}
+
+.centered {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.muted {
+  color: var(--color-brand-rosewood, #8e5a5a);
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .testimonials { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .category-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}

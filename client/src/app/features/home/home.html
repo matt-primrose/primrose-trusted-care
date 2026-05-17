@@ -1,0 +1,59 @@
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Care your family can trust.</h1>
+    <p class="lede">
+      Every Primrose Trusted Care provider is personally vetted, background-checked, and
+      credential-verified — because peace of mind shouldn't be optional.
+    </p>
+    <div class="cta-row">
+      <a routerLink="/services" class="btn primary">Explore Services</a>
+      <a routerLink="/contact" class="btn ghost">Get in Touch</a>
+    </div>
+  </div>
+</section>
+
+<app-section heading="Trusted by Families">
+  @if (featuredTestimonials().length === 0) {
+    <p class="muted">Testimonials coming soon.</p>
+  }
+  <div class="testimonials">
+    @for (t of featuredTestimonials(); track t.id) {
+      <app-card>
+        <blockquote>“{{ t.quote }}”</blockquote>
+        <p class="attribution">— {{ t.attribution }}@if (t.location) {, {{ t.location }}}</p>
+      </app-card>
+    }
+  </div>
+</app-section>
+
+<app-section heading="Services We Offer" [tinted]="true">
+  <div class="category-grid">
+    @for (cat of categories(); track cat.id) {
+      <app-card>
+        <h3>{{ cat.name }}</h3>
+        @if (cat.tagline) {
+          <p class="tagline">{{ cat.tagline }}</p>
+        }
+        <ul>
+          @for (svc of cat.services; track svc.id) {
+            @if (svc.active) {
+              <li><a [routerLink]="['/services', svc.id]">{{ svc.name }}</a></li>
+            }
+          }
+        </ul>
+      </app-card>
+    }
+  </div>
+  <p class="centered">
+    <a routerLink="/services" class="btn primary">See all services</a>
+  </p>
+</app-section>
+
+<app-section heading="Become a Primrose Trusted Care Provider">
+  <p class="centered">
+    Bring your gifts to families in your community. We help vetted providers find trusted work.
+  </p>
+  <p class="centered">
+    <a routerLink="/become-a-provider" class="btn primary">Apply to Provide</a>
+  </p>
+</app-section>

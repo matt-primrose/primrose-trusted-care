@@ -1,0 +1,53 @@
+article {
+  max-width: 720px;
+  margin: 0 auto;
+
+  .back {
+    display: inline-block;
+    color: var(--color-brand-rosewood, #8e5a5a);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    &:hover { text-decoration: underline; }
+  }
+
+  h2 {
+    font-family: var(--font-display, 'Cinzel', serif);
+    color: var(--color-brand-rosewood, #8e5a5a);
+    margin: 0 0 0.5rem;
+  }
+
+  .tagline {
+    color: var(--color-brand-rosewood, #8e5a5a);
+    font-style: italic;
+    margin: 0 0 1.5rem;
+  }
+
+  .desc {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0 0 2rem;
+  }
+
+  .booking-notes {
+    background: var(--color-brand-blush, #f8dce5);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+
+    h3 {
+      font-family: var(--font-display, 'Cinzel', serif);
+      margin: 0 0 0.5rem;
+      color: var(--color-brand-rosewood, #8e5a5a);
+    }
+  }
+
+  .cta {
+    display: inline-block;
+    background: var(--color-brand-crimson, #d33041);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+}

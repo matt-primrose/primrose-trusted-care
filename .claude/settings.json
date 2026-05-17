@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /b e:\\\\Repository\\\\primrose-trusted-care)",
+      "PowerShell(Rename-Item -Path 'brand-assets\\\\IMG_4563.png' -NewName 'ptc-child-care.png')",
+      "PowerShell(Rename-Item -Path 'brand-assets\\\\IMG_4569.png' -NewName 'ptc-christ.png')",
+      "PowerShell(Rename-Item -Path 'brand-assets\\\\IMG_4680.jpeg' -NewName 'ptc-color-pallette.jpeg')",
+      "PowerShell(Rename-Item -Path 'brand-assets\\\\ptc-color-pallette.jpeg' -NewName 'ptc-color-palette.jpeg')",
+      "Bash(findstr /n \"^\")",
+      "Bash(npm install *)",
+      "Bash(npm test *)",
+      "PowerShell($env:NG_CLI_ANALYTICS = \"false\"; npx -y @angular/cli@latest new client --ssr --routing --style=scss --skip-install --skip-git --defaults --package-manager=npm 2>&1 | Select-Object -Last 40)",
+      "Bash(npm run *)",
+      "Bash(node app.js)",
+      "Bash(curl -s -o nul -w \"Home: %%{http_code}\\\\n\" http://127.0.0.1:3000/)",
+      "Bash(curl -s -o nul -w \"Services: %%{http_code}\\\\n\" http://127.0.0.1:3000/services)",
+      "Bash(curl -s -o nul -w \"Health: %%{http_code}\\\\n\" http://127.0.0.1:3000/api/health)",
+      "Bash(curl -s http://127.0.0.1:3000/)",
+      "Bash(curl -s -I http://127.0.0.1:3000/)",
+      "Bash(curl -s -I http://127.0.0.1:3000/api/health)",
+      "Bash(curl -s http://127.0.0.1:3000/api/health)",
+      "Bash(taskkill /F /FI \"WINDOWTITLE eq node*\" /T)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "PowerShell(\"Stopped node\")",
+      "Bash(curl -s http://127.0.0.1:3000/api/content/services)",
+      "Bash(curl -s http://127.0.0.1:3000/api/content/founders)",
+      "PowerShell(\"Stopped\")",
+      "Bash(npx eslint *)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000__TRACKED_VAR__)"
+    ]
+  }
+}

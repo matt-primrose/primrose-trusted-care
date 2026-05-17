@@ -1,0 +1,80 @@
+{
+  "categories": [
+    {
+      "id": "child-care",
+      "name": "Child Care",
+      "tagline": "Care your family can trust",
+      "iconRef": "/brand-assets/ptc-child-care.png",
+      "services": [
+        {
+          "id": "full-time-nanny",
+          "name": "Full-Time Nanny",
+          "tagline": "Consistent daily care from a vetted nanny",
+          "description": "A trusted, full-time caregiver who becomes part of your family's rhythm. Our nannies are background-checked, CPR-certified, and matched to your family's values and schedule. Typical placements are 20–45 hours per week.",
+          "imageRef": "/brand-assets/ptc-child-care.png",
+          "bookingNotes": "Minimum 20 hours/week. We recommend starting with an in-home interview and a paid trial day to make sure the fit is right.",
+          "active": true
+        },
+        {
+          "id": "date-night",
+          "name": "Date Night Care",
+          "tagline": "A reliable sitter for the nights that matter",
+          "description": "Evening sitters who arrive on time, follow your routine, and let you actually enjoy your night out. Every date-night provider is vetted to the same standard as our full-time nannies.",
+          "imageRef": "/brand-assets/ptc-child-care.png",
+          "bookingNotes": "Book at least 48 hours in advance. Minimum 3-hour booking. Same-day requests subject to availability.",
+          "active": true
+        },
+        {
+          "id": "one-off-care",
+          "name": "One-Off Care",
+          "tagline": "Last-minute help when life happens",
+          "description": "Occasional or emergency child care — sick days, last-minute meetings, school holidays, weekend errands. The same vetted providers, scheduled in shorter blocks.",
+          "imageRef": "/brand-assets/ptc-child-care.png",
+          "bookingNotes": "Same-day bookings welcome but subject to availability. We'll always confirm before sending a provider.",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "mothers-helper",
+      "name": "Mother's Helper",
+      "tagline": "Extra hands around the house",
+      "services": [
+        {
+          "id": "mothers-helper-standard",
+          "name": "Mother's Helper",
+          "tagline": "Household help while you're home with the kids",
+          "description": "An extra set of hands for the day: light tidying, laundry, meal prep, errands, and play with older children while you handle the baby or take a breath. Mother's helpers do not provide unsupervised child care.",
+          "imageRef": "/brand-assets/ptc-child-care.png",
+          "bookingNotes": "Booked in 3-hour blocks. Most families schedule weekly or as-needed sessions.",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "pet-sitting",
+      "name": "Pet Sitting",
+      "tagline": "Loving care for the four-legged family",
+      "services": [
+        {
+          "id": "drop-in-pet-visit",
+          "name": "Drop-In Pet Visit",
+          "tagline": "Walks, feeds, and check-ins while you're away",
+          "description": "Scheduled visits to your home: walks, feeding, fresh water, medication, litter, and a photo update each visit. Perfect for day trips or work travel.",
+          "imageRef": "/brand-assets/ptc-child-care.png",
+          "bookingNotes": "Minimum 30-minute visits. Most clients book 1–3 visits per day for longer trips.",
+          "active": true
+        },
+        {
+          "id": "overnight-pet-sitting",
+          "name": "Overnight Pet Sitting",
+          "tagline": "A trusted sitter stays with your pet while you're away",
+          "description": "Your pet stays home, sticking to their normal routine, with one of our vetted sitters staying overnight. Includes morning and evening walks/feeds, fresh water, medication, and daily photo updates.",
+          "imageRef": "/brand-assets/ptc-child-care.png",
+          "bookingNotes": "Minimum 2-night booking. Book 1+ week in advance when possible.",
+          "active": true
+        }
+      ]
+    }
+  ]
+}

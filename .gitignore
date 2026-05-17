@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+**/dist/
+**/.angular/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Passenger
+tmp/
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Editor / OS
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Optional caches
+.cache/
+.parcel-cache/
+.eslintcache

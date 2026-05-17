@@ -1,0 +1,441 @@
+# Primrose Trusted Care — Project Guide for AI Agents
+
+> This file is the canonical source of truth for any AI agent (Claude Code, Copilot, etc.) creating or maintaining this site. Read it end-to-end before making changes. If a decision in this file conflicts with code you find, **stop and ask the owner** — don't silently diverge.
+
+---
+
+## 1. Project overview
+
+**Primrose Trusted Care (PTC)** is a family-services brand. The brand's defining promise is that every provider is **personally vetted** — background-checked and credentials-verified (e.g., CPR). This repo is the **public marketing website + intake forms** that introduces PTC to families and recruits new providers.
+
+**Current services:**
+- Child care — full-time nanny, date-night care, one-off / drop-in care.
+- Mother's helper (household help, no childcare duties).
+- Pet sitting.
+
+The service catalog is intentionally **extensible** — new offerings (e.g., elder companion, tutoring, house sitting) must be addable by editing content files, not by writing new components.
+
+**v1 scope (this repo right now):**
+- Public marketing site.
+- Contact form.
+- "Become a Provider" application form (intake only — verification is performed manually by staff out-of-band).
+
+**Explicitly out of scope in v1** — do not build these without an owner decision:
+- Applicant login or "track my application" status pages.
+- Staff/admin UI for reviewing submissions.
+- Integrated background-check provider (Checkr, Sterling, etc.).
+- Database persistence of any kind.
+- Online booking, scheduling, or payments.
+- Multi-instance / horizontally scaled deployments.
+
+---
+
+## 2. Tech stack & versions (locked)
+
+| Layer | Choice | Notes |
+| --- | --- | --- |
+| Backend runtime | **Node.js 22.x LTS** | Required by GoDaddy hosting target. |
+| Backend framework | **Express 5** | Passenger-friendly, SSE-friendly, small surface. |
+| Frontend framework | **Angular 21.x** | Standalone components, signals, no NgModules. |
+| Language | **Plain JS (ES modules)** on the backend, **TypeScript** on the frontend | Locked in during scaffold — no backend build step before Passenger runs the code. |
+| SSR | **Runtime SSR** via Angular's `@angular/ssr/node` | Composed in `client/src/server.ts`; our API mounts on the same Express app. |
+| Transport | **REST** for normal traffic, **SSE** for live events | See §7 for the SSE contract. |
+| Email | **Transactional API** (SendGrid or Postmark) | Wrapped behind a `MailService` interface; provider is swappable. |
+| Persistence | **None in v1** | Forms deliver to email; that inbox is the system of record. |
+| Auth | **None in v1** | Site is fully public. |
+| Anti-spam | **Honeypot field + per-IP rate limit** | No third-party captcha — overkill at this scale. |
+| Hosting | **GoDaddy Node.js Hosting** (cPanel + Phusion Passenger) | See §9. |
+
+**Rule:** No new runtime dependencies without owner approval. Small surface is a feature on shared hosting.
+
+---
+
+## 3. Repository layout
+
+```
+primrose-trusted-care/
+├── CLAUDE.md                    # this file
+├── README.md                    # human-facing project readme
+├── package.json                 # root scripts + npm workspaces (server + client)
+├── app.js                       # Passenger entry — boots client/dist/.../server.mjs (built SSR + API)
+├── server/                      # API workspace (plain JS, ES modules)
+│   ├── package.json
+│   ├── src/
+│   │   ├── index.js             # exports createApiRouter() + createApp()
+│   │   ├── standalone.js        # dev entry (API only on :3000); used by `npm run dev:server`
+│   │   ├── logger.js            # pino logger (PII redaction baked in)
+│   │   ├── routes/
+│   │   │   ├── contact.js       # POST /api/contact
+│   │   │   ├── provider.js      # POST /api/become-a-provider (multipart)
+│   │   │   ├── content.js       # GET  /api/content/*  (services/founders/testimonials/pages)
+│   │   │   └── events.js        # GET  /api/events     (SSE channel)
+│   │   ├── services/
+│   │   │   ├── mail.js          # MailService factory: console (default) | sendgrid (stub) | postmark (stub)
+│   │   │   ├── events.js        # SSE broadcaster (in-memory bus)
+│   │   │   └── content-loader.js  # reads + caches content/*.json + pages/*.md (mtime invalidation)
+│   │   └── middleware/
+│   │       ├── rate-limit.js
+│   │       ├── honeypot.js
+│   │       └── error-handler.js
+│   └── tests/                   # node:test specs (helpers.js + 4 test files)
+├── client/                      # Angular 21 frontend + SSR composition
+│   ├── angular.json
+│   ├── package.json
+│   ├── proxy.conf.json          # dev: proxies /api → :3000
+│   └── src/
+│       ├── index.html           # Google Fonts <link> with display=swap
+│       ├── main.ts              # browser bootstrap
+│       ├── main.server.ts       # SSR bootstrap
+│       ├── server.ts            # **production SSR composition** — mounts /api router on Express + Angular catch-all
+│       ├── styles.scss          # global stylesheet — imports tokens, sets defaults
+│       ├── styles/
+│       │   └── _tokens.scss     # mirrors brand-assets/palette.json
+│       └── app/
+│           ├── app.ts / .html / .scss      # root component (Header + RouterOutlet + Footer)
+│           ├── app.config.ts               # browser providers (router, http, hydration)
+│           ├── app.config.server.ts        # SSR providers
+│           ├── app.routes.ts               # lazy feature routes
+│           ├── app.routes.server.ts        # RenderMode.Server (runtime SSR everywhere)
+│           ├── core/
+│           │   ├── content.service.ts      # fetches + caches /api/content/*
+│           │   ├── live-events.service.ts  # EventSource wrapper (signals)
+│           │   ├── meta.service.ts         # per-route title + Open Graph
+│           │   └── models/ {service, founder, testimonial}.ts
+│           ├── shared/ {section, card}/    # reusable UI primitives (inline templates)
+│           ├── layout/ {header, footer}/   # site shell
+│           └── features/
+│               ├── home/                   # hero + testimonials teaser + services teaser + CTAs
+│               ├── services-list/          # /services
+│               ├── service-detail/         # /services/:id
+│               ├── about/                  # /about (founders + mission)
+│               ├── testimonials/           # /testimonials
+│               ├── contact/                # /contact (form + contact info)
+│               └── become-provider/        # /become-a-provider (form + cert uploads)
+├── content/                     # file-based content — single source of truth for copy
+│   ├── services.json            # nested categories → services
+│   ├── founders.json            # founder bios with photo refs
+│   ├── testimonials.json
+│   └── pages/
+│       ├── mission.md           # rendered via marked on the server, served as HTML
+│       └── contact.md
+└── brand-assets/                # owner-supplied; do not invent without these
+    ├── README.md                # describes the directory + naming conventions
+    ├── palette.json             # design tokens (draft — see §6)
+    ├── ptc-christ.png           # primary monogram (PtC, cross-shaped 't')
+    ├── ptc-child-care.png       # secondary illustrated mark (baby with pacifier)
+    ├── ptc-color-palette.jpeg   # color reference (source of the palette hex values)
+    └── ptc-font-example.JPG     # business card photo — source of typography choices
+```
+
+**Production runtime path:** `app.js` → `client/dist/client/server/server.mjs` (built from `client/src/server.ts`) → Express app with helmet/pino/json → our `/api` router → static `dist/client/browser/` → Angular SSR catch-all.
+
+**Dev runtime path:** `npm run dev` starts `server/src/standalone.js` (API only on :3000) and `ng serve` (Angular dev on :4200, proxying /api to :3000).
+
+---
+
+## 4. Domain model & extensibility
+
+### Service catalog schema (`content/services.json`)
+
+Two-level taxonomy. **Do not flatten.** Adding a service should never require touching components.
+
+```jsonc
+{
+  "categories": [
+    {
+      "id": "child-care",
+      "name": "Child Care",
+      "tagline": "Care your family can trust",
+      "iconRef": "icons/child-care.svg",
+      "services": [
+        {
+          "id": "full-time-nanny",
+          "name": "Full-Time Nanny",
+          "tagline": "Consistent daily care from a vetted nanny",
+          "description": "...",
+          "imageRef": "photography/nanny-hero.jpg",
+          "bookingNotes": "Minimum 20 hrs/week...",
+          "active": true
+        },
+        { "id": "date-night",  "name": "Date Night Care", "...": "..." },
+        { "id": "one-off",     "name": "One-Off Care",    "...": "..." }
+      ]
+    },
+    { "id": "mothers-helper", "name": "Mother's Helper", "services": [ /* ... */ ] },
+    { "id": "pet-sitting",    "name": "Pet Sitting",     "services": [ /* ... */ ] }
+  ]
+}
+```
+
+**Extensibility test (must pass before any service-related PR is merged):**
+> *Could a new category — e.g., "Elder Companion" — be added by editing only `services.json`, with no code changes? If no, the change has leaked the catalog into code; rework it.*
+
+### Other content files
+- `content/founders.json` — array of `{ id, name, role, photoRef, bio }`. Used by the About page.
+- `content/testimonials.json` — array of `{ id, quote, attribution, location, featured }`. `featured: true` items surface on the home page; the full list appears on `/testimonials`.
+- `content/pages/*.md` — long-form copy (mission, FAQ, privacy, etc.) rendered through a markdown component.
+
+---
+
+## 5. UI sections (required pages in v1)
+
+All routes are lazy-loaded standalone components.
+
+| Route | Purpose | Key components | Content source |
+| --- | --- | --- | --- |
+| `/` | Home — hero, services teaser, **testimonials early (trust signal)**, CTA to `/contact` and `/become-a-provider` | `HeroSection`, `ServicesTeaser`, `TestimonialsCarousel`, `CtaBanner` | `services.json`, `testimonials.json` (featured) |
+| `/services` | Full catalog | `CategorySection`, `ServiceCard` | `services.json` |
+| `/services/:id` | Individual service detail | `ServiceDetail` | `services.json` |
+| `/about` | Two founder cards side-by-side, mission statement | `FounderCard`, `MissionBlock` | `founders.json`, `pages/mission.md` |
+| `/testimonials` | Full testimonials list | `TestimonialCard` | `testimonials.json` |
+| `/contact` | Phone, email, service area, hours, contact form | `ContactInfo`, `ContactForm` | `pages/contact.md` |
+| `/become-a-provider` | Application form: contact info, services interested in, experience, references, **cert uploads (CPR, etc.)** | `ProviderApplicationForm` | n/a (form definition lives in code) |
+
+### Form fields (provider application, indicative — confirm copy with owner)
+- Contact: full name, email, phone, city/region.
+- Interests: which service categories they want to provide for (multi-select from `services.json`).
+- Experience: years, prior employers/families (free text), references.
+- Credentials: CPR cert upload (multipart), other cert uploads.
+- Consent: checkbox acknowledging that a background check will be run.
+
+Uploaded files are attached to the outbound email — **never written to server disk in v1**.
+
+---
+
+## 6. Brand & design system
+
+### Logo variants
+PTC has **two marks**. Choose deliberately.
+
+| Variant | File | Use for |
+| --- | --- | --- |
+| **Primary monogram** (PtC, the `t` is a stylized cross) | [`brand-assets/ptc-christ.png`](brand-assets/ptc-christ.png) | Header logo, favicon source, footer, formal contexts. This is the default brand mark. |
+| **Secondary illustrated** (baby with pacifier) | [`brand-assets/ptc-child-care.png`](brand-assets/ptc-child-care.png) | Softer/family-facing surfaces: hero illustrations, social cards, marketing collateral, child-care service pages. |
+
+Don't mix the two in the same surface (e.g., don't put both in the header). When pulling these into the Angular app under `client/src/assets/`, copy them with their existing names — don't rename again.
+
+### Palette and tokens
+- Authoritative palette lives in [`brand-assets/palette.json`](brand-assets/palette.json).
+- The values there are **eyedropper-approximations** from the brand reference image and are marked `version: 0.1.0-draft`. They must be verified against the source design file before launch.
+- Mirror palette tokens into `client/src/styles/_tokens.scss` as CSS custom properties. Components reference token names (`var(--color-primary)`), never raw hex.
+
+**Current palette (draft):**
+
+| Token | Hex | Role |
+| --- | --- | --- |
+| `color.brand.blush` | `#F8DCE5` | Lightest pink — page background, soft surfaces |
+| `color.brand.rose` | `#EBA3C2` | Mid pink — secondary accents, cards |
+| `color.brand.pink` | `#E84D8E` | Hot pink — accent, links, focus rings |
+| `color.brand.crimson` | `#D33041` | Warm red — primary CTA |
+| `color.brand.rosewood` | `#8E5A5A` | Muted brown-rose — logo text color, muted body text |
+| `color.ui.text` | `#2A1F22` | Deep warm near-black for body copy |
+
+Validate contrast: `color.ui.text` on `color.brand.blush` should clear WCAG AA (≥ 4.5:1). The hot-pink and crimson should not be used as text on the blush background without checking contrast first.
+
+### Typography
+Three roles, three faces — all sourced from **Google Fonts** so no licensing concerns. Defaults are approximated from [`brand-assets/ptc-font-example.JPG`](brand-assets/ptc-font-example.JPG) and can be swapped in `palette.json` + `_tokens.scss` later.
+
+| Role | Family | Where it's used | CSS variable |
+| --- | --- | --- | --- |
+| **Display** | **Cinzel** (Trajan-style Roman caps) | Logo lockup, page H1s only | `--font-display` |
+| **Body** | **Lato** (humanist sans) | Default for all UI: body copy, H2+, navigation, forms, buttons | `--font-body` |
+| **Script accent** | **Allura** (formal connected script) | Personal-name treatments and signatures **only** (e.g., founder signatures on the About page) | `--font-script` |
+
+**Rules:**
+- Cinzel is for **display only** — never use it below ~24px, never for paragraphs. It's all-caps glyphs by design.
+- Allura is **restricted to decorative name treatments**. Never use it for body copy, buttons, nav, links, or anything below ~24px. Failing this rule is an accessibility regression.
+- Set `--font-body` as the document default; switch to other faces only on the specific elements that need them.
+
+**Font loading — required snippet in `client/src/index.html`:**
+
+All three faces load from Google Fonts via a single request, with `display=swap` so the browser shows fallback text immediately instead of holding first paint:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@400;700&family=Allura&display=swap">
+```
+
+When swapping a family in `palette.json` later, update the `family=` parameters in this URL too — they're the only two places font names live. Do **not** drop `display=swap`.
+
+### Voice & tone
+- Warm, plain-spoken, trust-forward.
+- Faith undertone is expressed by **the brand mark itself** (the cross-shaped `t` in the PtC monogram) and by **values language** ("called to serve families", "community we trust", "caring for your family like our own").
+- **Do not add additional Christian iconography elsewhere on the site** — no extra crosses sprinkled across the UI, no scripture quotations, no churchy stock imagery. The brand mark carries the signal; the rest of the site reads as a warm, professional family-services brand.
+
+### Photography
+- Real families / real providers preferred over stock.
+- When stock is unavoidable, choose images that look candid rather than posed; warm, natural lighting; diverse families.
+- Consent rules: get written consent before publishing any photograph of a real provider, family, or child. Track consent in `brand-assets/photography/CONSENT.md` (to be created when real photography lands).
+- Every `<img>` requires meaningful `alt` text — never empty unless purely decorative.
+
+### Accessibility
+- Target **WCAG 2.1 AA.**
+- Contrast ratios verified against palette tokens.
+- Every interactive element keyboard-reachable; visible focus states.
+- Forms have labels, not placeholder-only inputs.
+
+### Responsive design
+- **Mobile-first.** Design at 360px width, then scale up.
+- Nav collapses to hamburger below 768px.
+- No horizontal scroll at any breakpoint.
+
+---
+
+## 7. Backend architecture
+
+### Process model
+- Single Express app, exported from `server/src/index.js`.
+- `app.js` at the repo root is the **Passenger entry** — it requires `./server/src/index.js` and listens on `process.env.PORT`.
+- Passenger spawns a single Node process per app in the default cPanel config. **All in-memory state (SSE clients, rate-limit counters) is single-process — do not assume fan-out.**
+
+### Routing
+- **Static**: Express serves Angular's built `dist/` directory at `/`. Unknown non-API routes fall through to `index.html` so Angular's router handles them.
+- **API**: all server endpoints mount under `/api/`.
+
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| `/api/content/services` | GET | Returns `content/services.json`. Cached in memory; reloaded on file mtime change in dev. |
+| `/api/content/founders` | GET | Returns `content/founders.json`. |
+| `/api/content/testimonials` | GET | Returns `content/testimonials.json`. |
+| `/api/contact` | POST | Validates, runs honeypot + rate-limit, hands to `MailService`, broadcasts `inquiry-received` SSE event, returns 202. |
+| `/api/become-a-provider` | POST | Multipart-aware; same flow as contact, attaches uploaded certs to the outbound email. |
+| `/api/events` | GET | SSE channel; see below. |
+
+### Form handling rules
+1. Validate input shape with zod (preferred) or express-validator.
+2. If the honeypot field is non-empty, respond 202 silently — do not reveal the rejection.
+3. Apply per-IP rate limit (e.g., 5 requests / 10 minutes) before invoking `MailService`.
+4. `MailService.send(...)` returns a promise; on success, broadcast an SSE event with a correlation id; on failure, log and return 500.
+5. **Never log raw form bodies.** Log a redacted shape: which endpoint, which fields were present, the correlation id. PII does not belong in stdout.
+
+### SSE channel (`/api/events`) — v1 contract
+
+The **only** SSE use case in v1: pushing a confirmation event when a submission is processed server-side, so the page can update without polling.
+
+- Client opens `GET /api/events` (EventSource).
+- Server sends a `: keep-alive` comment every **25 seconds** to keep the connection through proxies.
+- Server broadcasts events of type `inquiry-received` with payload `{ correlationId, source: "contact" | "provider", timestamp }` after `MailService.send` resolves.
+- Bus is in-memory (a `Set<Response>`); each connection is added on open, removed on close.
+- **Do not** add unrelated event types to this channel without an architectural review — it would break the "minimal SSE" v1 scope (§12).
+
+### Logging
+- Structured JSON via **pino**.
+- cPanel captures stdout/stderr — no extra log shipping in v1.
+
+---
+
+## 8. Frontend architecture
+
+- **Standalone components**, no NgModules. Use Angular 17+ idioms throughout.
+- **Lazy-loaded** feature routes.
+- **State**: signals + plain services. **No NgRx in v1.**
+- **HTTP**: typed API clients in `core/api/`. Content is fetched once at app init and cached in a `ContentService`.
+- **SSE client**: `LiveEventsService` in `core/` wraps `EventSource` and exposes an Observable / signal stream. Components opt in only where they actually need it (initially: contact and become-provider confirmation toasts).
+- **Styling**: SCSS, component-scoped. Pull from `_tokens.scss` — never write raw hex values in component styles.
+- **Forms**: typed reactive forms; show inline validation; disable submit while pending; show clear success and error states.
+
+---
+
+## 9. Deployment (GoDaddy Node.js Hosting — cPanel + Phusion Passenger)
+
+### Initial setup (one-time, in cPanel "Setup Node.js App")
+1. Create a new app.
+2. **Node.js version**: 22.x.
+3. **Application mode**: production.
+4. **Application root**: the cPanel-visible folder where the deploy will live.
+5. **Application URL**: the public domain (e.g., `primrosetrustedcare.com`).
+6. **Application startup file**: `app.js`.
+7. **Environment variables** (set via cPanel UI, **never committed**):
+   - `NODE_ENV=production`
+   - `MAIL_PROVIDER=sendgrid` (or `postmark`)
+   - `MAIL_API_KEY=...`
+   - `MAIL_FROM=...`
+   - `MAIL_TO=...`  (where submissions land)
+   - `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX` (optional overrides)
+
+### Build & deploy flow
+- `npm run build` at the repo root must:
+  1. Install server deps (`server/`).
+  2. Install client deps and run `ng build --configuration production` → `client/dist/`.
+- Deploy options (owner chooses):
+  - **Git deploy** via cPanel's Git Version Control (preferred when set up).
+  - **File upload** of the built tree (fallback).
+- After files land on the server, **restart Passenger**: `touch tmp/restart.txt` in the app root (or click "Restart" in cPanel).
+
+### First-deploy checklist (do before going live)
+- [ ] Domain points to the GoDaddy account.
+- [ ] SSL is provisioned (Let's Encrypt via cPanel or the bundled cert).
+- [ ] Node.js app is configured per the steps above.
+- [ ] All required env vars are set.
+- [ ] Mail provider has the production sender verified.
+- [ ] Test contact and provider forms in production, confirm email arrives.
+
+---
+
+## 10. Testing & quality gates
+
+| Area | Tool | What to cover |
+| --- | --- | --- |
+| Backend | `vitest` or built-in `node:test` | Route handlers, `MailService` (with a fake transport), honeypot middleware. |
+| Frontend | Angular's built-in test runner | Smoke test per feature, key services (`ContentService`, `LiveEventsService`). |
+| Lint | ESLint + Prettier | Both halves. Run via npm scripts; no husky in v1. |
+
+Run these locally before opening any PR. Don't merge red builds.
+
+---
+
+## 11. Operating rules for AI agents
+
+Before every change, satisfy this checklist:
+
+1. **Read content from JSON/markdown, never hard-code copy** — services, testimonials, bios, FAQ, mission. If you find yourself typing a service name in a component, stop.
+2. **Reference design tokens, not raw hex values.** Palette changes must propagate via `_tokens.scss` alone.
+3. **Form endpoints stay PII-light.** Never log raw form bodies. The email is the system of record in v1.
+4. **No new runtime dependencies without owner approval.** Small surface area is a feature on shared hosting.
+5. **Mobile-first.** Build the 360px layout, then scale up.
+6. **Faith undertone is carried by the brand mark (the cross in the PtC monogram) plus values language only.** Do not add Christian iconography elsewhere on the site (no extra crosses, scripture quotations, or churchy imagery).
+7. **Extensibility test for service changes.** Could a new category be added by editing only `services.json`? If no, rework.
+8. **SSE channel is for confirmation events only in v1.** Don't reuse it for unrelated flows without architectural review.
+9. **Don't write to server disk for user data.** Uploads stream straight into the outbound email.
+10. **If brand assets are missing,** leave placeholders (`TBD-PALETTE`, `TBD-LOGO`) — do not invent colors, typography, or imagery.
+
+---
+
+## 12. Roadmap (deferred, not forgotten)
+
+These items have been considered and explicitly deferred past v1. When the owner asks for one, plan a separate phase — don't sneak it in.
+
+- Applicant login + "track my application" status (likely pairs with expanding SSE).
+- Staff/admin UI for reviewing submissions (requires auth + persistence).
+- Integrated background-check provider (Checkr, Sterling, etc.) with webhook handling.
+- Database persistence for applications/contacts (PII handling, encryption-at-rest, backups).
+- Online booking / scheduling / payments.
+- Multi-instance scaling (current Passenger model assumes one process).
+- Headless CMS migration (if content volume outgrows file-based editing).
+
+---
+
+## 13. Pending tasks for the owner
+
+Status of scaffold and remaining pre-launch items:
+
+**Done in the scaffold (2026-05-17):**
+- [x] Drop initial brand assets into `brand-assets/` (logos + color reference).
+- [x] Confirm typography pairing — Cinzel (display), Lato (body), Allura (script accent). Approximated from `ptc-font-example.JPG`.
+- [x] Scaffold the full stack: Node 22 + Express 5 backend, Angular 21 SSR client, npm workspaces, file-based content with realistic placeholder copy, SSE channel, design tokens, ESLint + Prettier, 10 passing server tests.
+
+**Still needed before launch:**
+- [ ] **Verify the palette hex values** in [`brand-assets/palette.json`](brand-assets/palette.json) against the source design file — current values are eyedropper-approximated from the JPEG and marked `0.1.0-draft`.
+- [ ] Choose transactional email provider (SendGrid vs. Postmark), create the account, and wire up the stubbed adapter in [`server/src/services/mail.js`](server/src/services/mail.js).
+- [ ] Fill in real founder names + bios + portraits (replacing placeholders in [`content/founders.json`](content/founders.json)).
+- [ ] Fill in real contact info, service area, hours in [`content/pages/contact.md`](content/pages/contact.md).
+- [ ] Replace placeholder testimonials in [`content/testimonials.json`](content/testimonials.json) with real attributed quotes (with written consent).
+- [ ] Decide on a production domain, provision SSL on GoDaddy, and add the domain to `security.allowedHosts` in [`client/angular.json`](client/angular.json).
+- [ ] Verify Phusion Passenger config in cPanel matches §9 — especially the `Application startup file: app.js` setting.
+
+---
+
+*Last updated: 2026-05-17 (scaffold complete). When the v1 scope shifts, update this file in the same PR — agents trust it as ground truth.*

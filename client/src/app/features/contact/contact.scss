@@ -1,0 +1,103 @@
+.layout {
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: 1fr;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.info {
+  :is(h1, h2, h3) {
+    font-family: var(--font-display, 'Cinzel', serif);
+    color: var(--color-brand-rosewood, #8e5a5a);
+  }
+  a { color: var(--color-brand-crimson, #d33041); }
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-weight: 600;
+    color: var(--color-brand-rosewood, #8e5a5a);
+  }
+
+  .opt {
+    font-weight: 400;
+    color: var(--color-brand-rosewood, #8e5a5a);
+    font-style: italic;
+  }
+
+  input,
+  textarea {
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--color-ui-border, #e8c8d0);
+    border-radius: 6px;
+    font: inherit;
+    background: var(--color-ui-surface, #fff);
+    color: var(--color-ui-text, #2a1f22);
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: 2px solid var(--color-ui-focus-ring, #e84d8e);
+    outline-offset: 2px;
+    border-color: transparent;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  button {
+    align-self: flex-start;
+    background: var(--color-brand-crimson, #d33041);
+    color: #fff;
+    border: 0;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .success {
+    color: #1b6b3a;
+    background: #e6f4eb;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin: 0;
+  }
+  .error {
+    color: #8b1a23;
+    background: #fae6e8;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin: 0;
+  }
+  .badge {
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    background: #1b6b3a;
+    color: #fff;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+}
+
+@media (min-width: 768px) {
+  .layout { grid-template-columns: 1fr 1.4fr; }
+}

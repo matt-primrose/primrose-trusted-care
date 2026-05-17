@@ -1,0 +1,136 @@
+.intro {
+  max-width: 720px;
+  margin: 0 auto 2rem;
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--color-ui-text, #2a1f22);
+}
+
+.provider-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 720px;
+  margin: 0 auto;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-weight: 600;
+    color: var(--color-brand-rosewood, #8e5a5a);
+  }
+
+  .opt {
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='tel'],
+  textarea {
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--color-ui-border, #e8c8d0);
+    border-radius: 6px;
+    font: inherit;
+    background: var(--color-ui-surface, #fff);
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: 2px solid var(--color-ui-focus-ring, #e84d8e);
+    outline-offset: 2px;
+    border-color: transparent;
+  }
+
+  .interests {
+    border: 1px solid var(--color-ui-border, #e8c8d0);
+    border-radius: 6px;
+    padding: 1rem;
+
+    legend {
+      padding: 0 0.5rem;
+      font-weight: 600;
+      color: var(--color-brand-rosewood, #8e5a5a);
+    }
+
+    .cb {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 400;
+      color: var(--color-ui-text, #2a1f22);
+    }
+  }
+
+  .file-upload .file-list {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+    color: var(--color-ui-text, #2a1f22);
+    font-weight: 400;
+  }
+
+  .consent {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-weight: 400;
+    color: var(--color-ui-text, #2a1f22);
+    line-height: 1.4;
+  }
+
+  .field-error {
+    color: #8b1a23;
+    font-weight: 400;
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  button {
+    align-self: flex-start;
+    background: var(--color-brand-crimson, #d33041);
+    color: #fff;
+    border: 0;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .success {
+    color: #1b6b3a;
+    background: #e6f4eb;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin: 0;
+  }
+  .error {
+    color: #8b1a23;
+    background: #fae6e8;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin: 0;
+  }
+  .badge {
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    background: #1b6b3a;
+    color: #fff;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+}

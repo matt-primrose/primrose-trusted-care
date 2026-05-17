@@ -1,0 +1,24 @@
+<app-section>
+  @if (notFound()) {
+    <h2>Service not found</h2>
+    <p>We couldn't find that service. <a routerLink="/services">See all services</a>.</p>
+  } @else if (service(); as svc) {
+    <article>
+      <a routerLink="/services" class="back">← All services</a>
+      <h2>{{ svc.name }}</h2>
+      @if (svc.tagline) {
+        <p class="tagline">{{ svc.tagline }}</p>
+      }
+      <p class="desc">{{ svc.description }}</p>
+      @if (svc.bookingNotes) {
+        <div class="booking-notes">
+          <h3>Booking notes</h3>
+          <p>{{ svc.bookingNotes }}</p>
+        </div>
+      }
+      <p>
+        <a routerLink="/contact" class="cta">Get in touch about this service</a>
+      </p>
+    </article>
+  }
+</app-section>

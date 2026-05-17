@@ -1,0 +1,28 @@
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+blockquote {
+  margin: 0 0 0.75rem;
+  font-style: italic;
+  color: var(--color-ui-text, #2a1f22);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.attribution {
+  margin: 0;
+  color: var(--color-brand-rosewood, #8e5a5a);
+  font-size: 0.9rem;
+}
+
+.muted {
+  color: var(--color-brand-rosewood, #8e5a5a);
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+}

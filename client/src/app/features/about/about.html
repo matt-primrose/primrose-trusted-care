@@ -1,0 +1,17 @@
+<app-section heading="About Primrose Trusted Care">
+  <div class="mission" [innerHTML]="missionHtml()"></div>
+</app-section>
+
+<app-section heading="Meet the Founders" [tinted]="true">
+  <div class="founders">
+    @for (f of founders(); track f.id) {
+      <div class="founder">
+        <img [src]="f.photoRef" [alt]="f.name" />
+        <h3 class="name">{{ f.name }}</h3>
+        <p class="role">{{ f.role }}</p>
+        <p class="bio">{{ f.bio }}</p>
+        <p class="signature">{{ f.name }}</p>
+      </div>
+    }
+  </div>
+</app-section>

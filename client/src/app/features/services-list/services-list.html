@@ -1,0 +1,30 @@
+<app-section heading="Our Services">
+  @if (loading()) {
+    <p class="muted">Loading services…</p>
+  } @else if (categories().length === 0) {
+    <p class="muted">No services published yet.</p>
+  }
+
+  @for (cat of categories(); track cat.id) {
+    <div class="category">
+      <h3>{{ cat.name }}</h3>
+      @if (cat.tagline) {
+        <p class="tagline">{{ cat.tagline }}</p>
+      }
+      <div class="grid">
+        @for (svc of cat.services; track svc.id) {
+          @if (svc.active) {
+            <app-card>
+              <h4>{{ svc.name }}</h4>
+              @if (svc.tagline) {
+                <p class="svc-tagline">{{ svc.tagline }}</p>
+              }
+              <p class="desc">{{ svc.description }}</p>
+              <a [routerLink]="['/services', svc.id]" class="more">Learn more →</a>
+            </app-card>
+          }
+        }
+      </div>
+    </div>
+  }
+</app-section>

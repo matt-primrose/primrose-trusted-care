@@ -1,0 +1,107 @@
+<app-section heading="Become a Primrose Trusted Care Provider">
+  <p class="intro">
+    Tell us about yourself. Every applicant goes through background check and credential
+    verification — please be ready to provide CPR certificates and references.
+  </p>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    class="provider-form"
+    novalidate
+    enctype="multipart/form-data"
+  >
+    <label>
+      Full name
+      <input formControlName="name" type="text" autocomplete="name" required />
+    </label>
+
+    <label>
+      Email
+      <input formControlName="email" type="email" autocomplete="email" required />
+    </label>
+
+    <label>
+      Phone
+      <input formControlName="phone" type="tel" autocomplete="tel" required />
+    </label>
+
+    <label>
+      City / region <span class="opt">(optional)</span>
+      <input formControlName="city" type="text" autocomplete="address-level2" />
+    </label>
+
+    <fieldset class="interests">
+      <legend>I'm interested in providing</legend>
+      @for (cat of categories(); track cat.id) {
+        <label class="cb">
+          <input
+            type="checkbox"
+            [value]="cat.id"
+            (change)="toggleInterest(cat.id, $any($event.target).checked)"
+          />
+          {{ cat.name }}
+        </label>
+      }
+      @if (form.controls.interests.invalid && form.controls.interests.touched) {
+        <p class="field-error">Please choose at least one service category.</p>
+      }
+    </fieldset>
+
+    <label>
+      Experience <span class="opt">(optional, free text)</span>
+      <textarea formControlName="experience" rows="4"></textarea>
+    </label>
+
+    <label>
+      References <span class="opt">(optional, free text)</span>
+      <textarea formControlName="references" rows="3"></textarea>
+    </label>
+
+    <label class="file-upload">
+      Upload certificates (CPR, etc.)
+      <span class="opt">Up to 5 files, 10MB each (PDF, JPG, PNG)</span>
+      <input
+        type="file"
+        (change)="onFiles($event)"
+        multiple
+        accept="application/pdf,image/png,image/jpeg"
+      />
+      @if (files().length > 0) {
+        <ul class="file-list">
+          @for (f of files(); track f.name) {
+            <li>{{ f.name }} ({{ (f.size / 1024) | number: '1.0-0' }} KB)</li>
+          }
+        </ul>
+      }
+    </label>
+
+    <label class="consent">
+      <input type="checkbox" formControlName="consentBackgroundCheck" />
+      I understand and consent that Primrose Trusted Care will run a background check as part of
+      the application process.
+    </label>
+
+    <label class="hp" aria-hidden="true">
+      Leave this field empty
+      <input formControlName="honeypot" type="text" tabindex="-1" autocomplete="off" />
+    </label>
+
+    <button type="submit" [disabled]="state() === 'submitting'">
+      {{ state() === 'submitting' ? 'Submitting…' : 'Submit application' }}
+    </button>
+
+    @if (state() === 'success') {
+      <p class="success">
+        Thanks for applying — we've received your information. We'll be in touch within a few
+        business days.
+        @if (confirmed()) {
+          <span class="badge">✓ confirmed</span>
+        }
+      </p>
+    }
+    @if (state() === 'error') {
+      <p class="error">Something went wrong. Please try again or email us directly.</p>
+    }
+  </form>
+</app-section>

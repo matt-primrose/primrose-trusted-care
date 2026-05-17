@@ -1,0 +1,31 @@
+<header class="site-header">
+  <a routerLink="/" class="brand" (click)="closeMenu()">
+    <img src="/brand-assets/ptc-christ.png" alt="" class="brand-mark" />
+    <span class="brand-name">Primrose Trusted Care</span>
+  </a>
+
+  <button
+    type="button"
+    class="hamburger"
+    (click)="toggleMenu()"
+    [attr.aria-expanded]="menuOpen()"
+    aria-controls="primary-nav"
+    aria-label="Toggle navigation"
+  >
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav id="primary-nav" [class.is-open]="menuOpen()">
+    <a routerLink="/services" routerLinkActive="active" (click)="closeMenu()">Services</a>
+    <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About</a>
+    <a routerLink="/testimonials" routerLinkActive="active" (click)="closeMenu()">Testimonials</a>
+    <a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact</a>
+    <a
+      routerLink="/become-a-provider"
+      routerLinkActive="active"
+      (click)="closeMenu()"
+      class="cta"
+      >Become a Provider</a
+    >
+  </nav>
+</header>
