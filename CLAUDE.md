@@ -44,7 +44,7 @@ The service catalog is intentionally **extensible** — new offerings (e.g., eld
 | Persistence | **None in v1** | Forms deliver to email; that inbox is the system of record. |
 | Auth | **None in v1** | Site is fully public. |
 | Anti-spam | **Honeypot field + per-IP rate limit** | No third-party captcha — overkill at this scale. |
-| Hosting | **GoDaddy Node.js Hosting** (cPanel + Phusion Passenger) | See §9. |
+| Hosting | **GoDaddy PaaS** (Node.js Hosting Beta — `host.beta.godaddy.com/paas`) | Heroku-style: upload source, platform runs `npm install && npm run build && npm start`. See §9. |
 
 **Rule:** No new runtime dependencies without owner approval. Small surface is a feature on shared hosting.
 
@@ -323,7 +323,7 @@ The **only** SSE use case in v1: pushing a confirmation event when a submission 
 
 ### Logging
 - Structured JSON via **pino**.
-- cPanel captures stdout/stderr — no extra log shipping in v1.
+- Platform captures stdout/stderr — view in the PaaS dashboard. No extra log shipping in v1.
 
 ---
 
@@ -339,39 +339,44 @@ The **only** SSE use case in v1: pushing a confirmation event when a submission 
 
 ---
 
-## 9. Deployment (GoDaddy Node.js Hosting — cPanel + Phusion Passenger)
+## 9. Deployment (GoDaddy PaaS — Node.js Hosting Beta)
 
-### Initial setup (one-time, in cPanel "Setup Node.js App")
-1. Create a new app.
-2. **Node.js version**: 22.x.
-3. **Application mode**: production.
-4. **Application root**: the cPanel-visible folder where the deploy will live.
-5. **Application URL**: the public domain (e.g., `primrosetrustedcare.com`).
-6. **Application startup file**: `app.js`.
-7. **Environment variables** (set via cPanel UI, **never committed**):
-   - `NODE_ENV=production`
-   - `MAIL_PROVIDER=sendgrid` (or `postmark`)
-   - `MAIL_API_KEY=...`
-   - `MAIL_FROM=...`
-   - `MAIL_TO=...`  (where submissions land)
-   - `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX` (optional overrides)
+The site deploys to **GoDaddy PaaS**, accessed at `host.beta.godaddy.com/paas` (currently in Beta). PaaS is a Heroku-style platform — you provide source code and the platform runs `npm install && npm run build && npm start`. It is **not** the classic cPanel + Phusion Passenger product (also marketed as "Node.js Hosting" — different product, same name; expect confusion).
 
-### Build & deploy flow
-- `npm run build` at the repo root must:
-  1. Install server deps (`server/`).
-  2. Install client deps and run `ng build --configuration production` → `client/dist/`.
-- Deploy options (owner chooses):
-  - **Git deploy** via cPanel's Git Version Control (preferred when set up).
-  - **File upload** of the built tree (fallback).
-- After files land on the server, **restart Passenger**: `touch tmp/restart.txt` in the app root (or click "Restart" in cPanel).
+Authoritative app requirements: <https://host.beta.godaddy.com/paas/app-requirements>.
+
+### What our `package.json` must declare (already in place at the repo root)
+- `"main": "app.js"` — entry point.
+- `"build": "..."` — runs once on the platform during deploy (`npm run build` builds the Angular SSR bundle into `client/dist/`).
+- `"start": "node app.js"` — long-running command the platform invokes.
+
+### How code reaches PaaS (two options)
+- **Zip upload** (≤ 100 MB) via the PaaS dashboard. Exclude `node_modules/` and `**/dist/` from the zip — PaaS will install deps and run the build. Our `.gitignore` already excludes these from version control.
+- **GitHub integration** — connect a repo and trigger pull-and-deploy from the dashboard. Preferable once set up: one-click deploys, clear audit trail.
+
+For a small marketing site that changes infrequently, either works. Pick GitHub when the repo lives somewhere we control.
+
+### Environment variables
+Set these in the PaaS dashboard. **Never commit them.** Same shape as `.env.example` at the repo root:
+- `NODE_ENV=production`
+- `MAIL_PROVIDER=sendgrid` (or `postmark`)
+- `MAIL_API_KEY=...`
+- `MAIL_FROM=...` — verified sender address
+- `MAIL_TO=...` — where submissions land
+- `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX` (optional overrides)
+
+`PORT` is set automatically by PaaS; our app already reads `process.env.PORT`.
+
+### Network constraints
+PaaS apps can make **outbound connections only on ports 80 and 443**, plus GoDaddy-managed databases. SendGrid and Postmark both serve on 443, so we're fine. If we ever add a new external integration, verify it's HTTPS before assuming it'll work.
 
 ### First-deploy checklist (do before going live)
-- [ ] Domain points to the GoDaddy account.
-- [ ] SSL is provisioned (Let's Encrypt via cPanel or the bundled cert).
-- [ ] Node.js app is configured per the steps above.
-- [ ] All required env vars are set.
+- [ ] Confirm Node.js **22.x** is selectable in the PaaS dashboard. The public app-requirements page doesn't list supported versions — verify before relying on it.
+- [ ] Add the production domain (and any wildcard like `.primrosetrustedcare.com`) to `security.allowedHosts` in [`client/angular.json`](client/angular.json) and rebuild. Angular's SSR will return 400s for hosts not on the list.
+- [ ] Set all required env vars in the PaaS dashboard.
 - [ ] Mail provider has the production sender verified.
-- [ ] Test contact and provider forms in production, confirm email arrives.
+- [ ] Trigger a deploy. Once the URL is live, test the contact and provider forms end-to-end and confirm an email arrives.
+- [ ] Verify the SSE channel (`/api/events`) stays connected through PaaS's network layer — long-lived HTTP responses can hit proxy timeouts on some platforms. If keep-alives get dropped, raise the timeout or shorten the keep-alive interval below 25s.
 
 ---
 
@@ -433,8 +438,9 @@ Status of scaffold and remaining pre-launch items:
 - [ ] Fill in real founder names + bios + portraits (replacing placeholders in [`content/founders.json`](content/founders.json)).
 - [ ] Fill in real contact info, service area, hours in [`content/pages/contact.md`](content/pages/contact.md).
 - [ ] Replace placeholder testimonials in [`content/testimonials.json`](content/testimonials.json) with real attributed quotes (with written consent).
-- [ ] Decide on a production domain, provision SSL on GoDaddy, and add the domain to `security.allowedHosts` in [`client/angular.json`](client/angular.json).
-- [ ] Verify Phusion Passenger config in cPanel matches §9 — especially the `Application startup file: app.js` setting.
+- [ ] Decide on a production domain, provision SSL via the PaaS dashboard, and add the domain to `security.allowedHosts` in [`client/angular.json`](client/angular.json).
+- [ ] Confirm Node.js 22.x is selectable in the PaaS dashboard (the public app-requirements page doesn't list supported versions — verify before first deploy).
+- [ ] Verify SSE keep-alives survive the PaaS network layer (long-lived HTTP can hit proxy timeouts on managed platforms).
 
 ---
 

@@ -9,7 +9,7 @@ Marketing website for Primrose Trusted Care — a vetted family-services brand o
 - **Node.js 22** (LTS) + **Express 5** backend (plain JS, ES modules)
 - **Angular 21** frontend (TypeScript, standalone components, **SSR at runtime**)
 - File-based content (no database in v1)
-- Hosted on **GoDaddy Node.js Hosting** (cPanel + Phusion Passenger)
+- Hosted on **GoDaddy PaaS** (Node.js Hosting Beta — Heroku-style upload/build/run)
 
 ## Repository layout
 
@@ -99,15 +99,17 @@ npm run lint
 
 ESLint flat config at the root covers server + root JS. Prettier config is at the root too. Client lint is a placeholder for v1 (wire up `@angular-eslint` later).
 
-## Deploy (GoDaddy cPanel + Passenger)
+## Deploy (GoDaddy PaaS — Node.js Hosting Beta)
 
-See [CLAUDE.md §9](CLAUDE.md) for the full first-deploy checklist. Summary:
+See [CLAUDE.md §9](CLAUDE.md) for the full first-deploy checklist and authoritative requirements. Summary:
 
-1. In cPanel → "Setup Node.js App", create the app with **Node.js version 22.x**, **Application mode: production**, **Application startup file: `app.js`**.
-2. Set environment variables in cPanel (never commit `.env`).
-3. Upload or pull the repo into the configured app root.
-4. SSH in (or use cPanel's terminal): `npm install && npm run build`.
-5. Restart Passenger via cPanel's "Restart" button (or `touch tmp/restart.txt`).
+1. In the PaaS dashboard at `host.beta.godaddy.com/paas`, create the app. Confirm Node.js **22.x** is selected.
+2. Set environment variables in the PaaS dashboard (never commit `.env`).
+3. Deploy via either:
+   - **Zip upload** (≤ 100 MB; exclude `node_modules/` and `**/dist/`), or
+   - **GitHub integration** — connect the repo and trigger a deploy from the dashboard.
+4. PaaS runs `npm install`, `npm run build`, then `npm start`. Your app listens on `process.env.PORT`.
+5. Add the production domain to `security.allowedHosts` in [`client/angular.json`](client/angular.json) **before** first deploy — Angular SSR returns 400 for unknown hosts.
 
 ## Project history & decisions
 

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "main": "app.js",
   "description": "Primrose Trusted Care — family-services marketing site (Node 22 + Angular 21 SSR).",
   "engines": {
     "node": ">=22.0.0",
