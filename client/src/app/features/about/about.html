@@ -2,11 +2,11 @@
   <div class="mission" [innerHTML]="missionHtml()"></div>
 </app-section>
 
-<app-section heading="Meet the Founders" [tinted]="true">
+<app-section heading="Meet the Founders">
   <div class="founders">
     @for (f of founders(); track f.id) {
       <div class="founder">
-        <img [src]="f.photoRef" [alt]="f.name" />
+        <img [src]="f.photoRef" alt="Primrose Trusted Care founder portrait" />
         <h3 class="name">{{ f.name }}</h3>
         <p class="role">{{ f.role }}</p>
         <p class="bio">{{ f.bio }}</p>

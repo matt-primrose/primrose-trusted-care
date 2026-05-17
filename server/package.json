@@ -16,6 +16,7 @@
     "express-rate-limit": "^7.5.0",
     "zod": "^3.24.1",
     "marked": "^15.0.6",
-    "multer": "^2.0.0"
+    "multer": "^2.0.0",
+    "@sendgrid/mail": "^8.1.4"
   }
 }

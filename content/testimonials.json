@@ -1,26 +1,17 @@
 {
-  "_note": "Placeholder testimonials. Replace with real, attributed quotes (with written consent) before launch.",
+  "_note": "Placeholder testimonials. Replace with real, attributed quotes (with written consent) before launch. All entries surface on both the home carousel and the /testimonials list.",
   "testimonials": [
     {
-      "id": "placeholder-1",
-      "quote": "We went from never knowing who was coming into our house to having someone we genuinely trust with our kids. The vetting matters — it's the only reason we'd consider letting someone else do bedtime.",
-      "attribution": "Jen K.",
-      "location": "Mesa, AZ",
-      "featured": true
+      "id": "placeholder-4",
+      "quote": "My Primrose Trusted Care nanny has become an extension of our family and we are so blessed to have her.  She cares for our daughter like she's her own and makes it a point to engage in meaningful play such as sign language, songs, structured outings, story time and more.  She is reliable, always on time and goes above and beyond every day.  I highly recommend Primrose Trusted Care if you are looking for a nanny!",
+      "attribution": "Lydia P.",
+      "location": "Mesa, AZ"
     },
     {
-      "id": "placeholder-2",
-      "quote": "I needed a sitter on three days' notice and Primrose still found a great fit. Everyone they've sent has been on time, kind, and clearly experienced with kids.",
-      "attribution": "Marcos R.",
-      "location": "Gilbert, AZ",
-      "featured": true
-    },
-    {
-      "id": "placeholder-3",
-      "quote": "We use them for date nights and for pet sitting when we travel. Same vetting standard, same level of care. It's hard to overstate the peace of mind.",
-      "attribution": "Hannah & Drew T.",
-      "location": "Chandler, AZ",
-      "featured": false
+      "id": "placeholder-5",
+      "quote": "We are beyond grateful to have Sara with Primrose Trusted Care as our nanny—she has truly been a blessing to our family. From the moment she started, Sara has shown incredible warmth, patience, and genuine care for our children. Her nurturing spirit and joyful energy make every day brighter and safer for our little ones.  Sara is not only reliable and punctual but also incredibly creative, always coming up with fun and educational activities that keep our kids engaged and happy. She anticipates their needs with ease and communicates clearly with us, making us feel completely at ease whenever we’re away.  Her professionalism and dedication go above and beyond what we could have hoped for. Sara isn’t just a nanny; she has become a trusted and cherished member of our family. We wholeheartedly recommend Primrose Trusted Care to any family looking for care they can trust.",
+      "attribution": "Bella B.",
+      "location": "Mesa, AZ"
     }
   ]
 }

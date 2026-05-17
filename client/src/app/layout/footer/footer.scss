@@ -1,16 +1,17 @@
 .site-footer {
   background: var(--color-brand-blush, #f8dce5);
-  padding: 2.5rem 1.25rem 1.5rem;
-  margin-top: 4rem;
+  padding: 2rem 1.25rem 1.25rem;
+  margin-top: 2rem;
   display: grid;
   gap: 1.5rem;
   text-align: center;
 
   .brand-mark {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.625rem;
 
     img {
       width: 56px;
@@ -51,9 +52,13 @@
 
 @media (min-width: 768px) {
   .site-footer {
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: auto 1fr auto;
     text-align: left;
     align-items: center;
+
+    .brand-mark {
+      justify-content: flex-start;
+    }
 
     nav {
       justify-content: center;

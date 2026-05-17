@@ -7,8 +7,9 @@ This directory is the **single source of truth** for Primrose Trusted Care brand
 | File | Purpose |
 | --- | --- |
 | [`palette.json`](palette.json) | Design tokens (colors, typography, logo metadata). Mirrored into `client/src/styles/_tokens.scss`. |
-| [`ptc-christ.png`](ptc-christ.png) | **Primary monogram** — PtC with the cross-shaped `t`. Use for header, favicon, footer, formal contexts. |
-| [`ptc-child-care.png`](ptc-child-care.png) | **Secondary illustrated mark** — baby with pacifier. Use for child-care sections, social cards, softer family-facing contexts. |
+| [`ptc-christ.png`](ptc-christ.png) | **PtC monogram** — PtC with the cross-shaped `t`. Used in the site header and footer as a small brand mark, and in formal/print contexts (business cards, letterhead, signature blocks). The brand's identity mark. |
+| [`ptc-child-care.png`](ptc-child-care.png) | **Illustrated mark** (white background) — baby with pacifier. Use on white surfaces. |
+| [`ptc-child-care-transparent.png`](ptc-child-care-transparent.png) | **Illustrated mark** (transparent background) — same illustration with white pixels converted to alpha=0. Use on colored/gradient surfaces (hero, favicon, anywhere over the body gradient) so the logo doesn't show a white square halo. |
 | [`ptc-color-palette.jpeg`](ptc-color-palette.jpeg) | Color reference image. The source of the eyedropper-approximated hex values in `palette.json` (draft until verified against the master design file). |
 | [`ptc-font-example.JPG`](ptc-font-example.JPG) | Business-card photo used to identify the typography pairing (Cinzel display, Lato body, Allura script accent). |
 
@@ -19,7 +20,7 @@ These files are exposed at `/brand-assets/<filename>` in the browser, thanks to 
 ## Don't
 
 - **Don't put both marks on the same surface.** Pick one per context.
-- **Don't add other Christian iconography** elsewhere on the site — the cross in the monogram carries the brand's faith undertone. Adding crosses to other pages would push past "subtle."
+- **Don't add Christian iconography elsewhere on the public site.** The cross in the PtC monogram (visible in the header and footer) carries the faith undertone; adding additional crosses or churchy imagery to other pages would push past "subtle."
 - **Don't invent hex values.** If the palette needs to change, edit `palette.json` and `_tokens.scss` together.
 
 ## Adding new assets

@@ -68,11 +68,11 @@
         accept="application/pdf,image/png,image/jpeg"
       />
       @if (files().length > 0) {
-        <ul class="file-list">
+        <div class="file-list" role="list">
           @for (f of files(); track f.name) {
-            <li>{{ f.name }} ({{ (f.size / 1024) | number: '1.0-0' }} KB)</li>
+            <div role="listitem">{{ f.name }} ({{ (f.size / 1024) | number: '1.0-0' }} KB)</div>
           }
-        </ul>
+        </div>
       }
     </label>
 

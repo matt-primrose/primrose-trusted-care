@@ -49,13 +49,14 @@
     }
   },
   "logo": {
-    "primary": {
+    "monogram": {
       "file": "ptc-christ.png",
-      "description": "PtC monogram with cross-shaped 't'. Use as primary header logo, favicon source, and anywhere a refined/professional mark is appropriate."
+      "description": "PtC monogram with cross-shaped 't'. Used in the site header and footer as a small brand mark, and in formal/print contexts (business cards, letterhead, signatures). The brand's identity mark."
     },
-    "secondary": {
+    "illustrated": {
       "file": "ptc-child-care.png",
-      "description": "Illustrated mark (baby with pacifier). Use for softer/family-facing contexts: social, hero illustrations, marketing collateral, child-care service pages."
+      "transparentFile": "ptc-child-care-transparent.png",
+      "description": "Illustrated mark (baby with pacifier). Used in the hero, as the favicon, on social cards, and in marketing collateral. Use the transparent variant when overlaying a colored or gradient background."
     }
   }
 }

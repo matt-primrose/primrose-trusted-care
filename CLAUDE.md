@@ -172,7 +172,7 @@ Two-level taxonomy. **Do not flatten.** Adding a service should never require to
 
 ### Other content files
 - `content/founders.json` — array of `{ id, name, role, photoRef, bio }`. Used by the About page.
-- `content/testimonials.json` — array of `{ id, quote, attribution, location, featured }`. `featured: true` items surface on the home page; the full list appears on `/testimonials`.
+- `content/testimonials.json` — array of `{ id, quote, attribution, location }`. The same list surfaces on both the home-page carousel and the `/testimonials` page.
 - `content/pages/*.md` — long-form copy (mission, FAQ, privacy, etc.) rendered through a markdown component.
 
 ---
@@ -209,8 +209,10 @@ PTC has **two marks**. Choose deliberately.
 
 | Variant | File | Use for |
 | --- | --- | --- |
-| **Primary monogram** (PtC, the `t` is a stylized cross) | [`brand-assets/ptc-christ.png`](brand-assets/ptc-christ.png) | Header logo, favicon source, footer, formal contexts. This is the default brand mark. |
-| **Secondary illustrated** (baby with pacifier) | [`brand-assets/ptc-child-care.png`](brand-assets/ptc-child-care.png) | Softer/family-facing surfaces: hero illustrations, social cards, marketing collateral, child-care service pages. |
+| **PtC monogram** (the `t` is a stylized cross) | [`brand-assets/ptc-christ.png`](brand-assets/ptc-christ.png) | Site chrome — header and footer brand marks. Also formal/print contexts: business cards, letterhead, signature blocks. The brand's identity mark. |
+| **Illustrated mark** (baby with pacifier) | [`brand-assets/ptc-child-care.png`](brand-assets/ptc-child-care.png) / [`ptc-child-care-transparent.png`](brand-assets/ptc-child-care-transparent.png) | Hero illustrations, favicon source, social cards, marketing collateral, child-care service pages. The brand's friendlier face. Use the transparent version when overlaying a colored or gradient background. |
+
+Both marks may appear on the same page (e.g., monogram in the header and illustrated mark in the hero), but **don't place both marks on the same surface** (e.g., don't put both in the header).
 
 Don't mix the two in the same surface (e.g., don't put both in the header). When pulling these into the Angular app under `client/src/assets/`, copy them with their existing names — don't rename again.
 
@@ -401,7 +403,7 @@ Before every change, satisfy this checklist:
 3. **Form endpoints stay PII-light.** Never log raw form bodies. The email is the system of record in v1.
 4. **No new runtime dependencies without owner approval.** Small surface area is a feature on shared hosting.
 5. **Mobile-first.** Build the 360px layout, then scale up.
-6. **Faith undertone is carried by the brand mark (the cross in the PtC monogram) plus values language only.** Do not add Christian iconography elsewhere on the site (no extra crosses, scripture quotations, or churchy imagery).
+6. **Faith undertone is carried by the brand mark (the cross in the PtC monogram in the site chrome) plus values language.** Do not add additional Christian iconography elsewhere on the site (no extra crosses sprinkled into the UI, no scripture quotations, no churchy imagery). The monogram in the header/footer carries the signal; the rest of the site reads as a warm, professional family-services brand.
 7. **Extensibility test for service changes.** Could a new category be added by editing only `services.json`? If no, rework.
 8. **SSE channel is for confirmation events only in v1.** Don't reuse it for unrelated flows without architectural review.
 9. **Don't write to server disk for user data.** Uploads stream straight into the outbound email.
@@ -434,7 +436,7 @@ Status of scaffold and remaining pre-launch items:
 
 **Still needed before launch:**
 - [ ] **Verify the palette hex values** in [`brand-assets/palette.json`](brand-assets/palette.json) against the source design file — current values are eyedropper-approximated from the JPEG and marked `0.1.0-draft`.
-- [ ] Choose transactional email provider (SendGrid vs. Postmark), create the account, and wire up the stubbed adapter in [`server/src/services/mail.js`](server/src/services/mail.js).
+- [x] Choose transactional email provider — **SendGrid** selected; live adapter wired up in [`server/src/services/mail.js`](server/src/services/mail.js) using `@sendgrid/mail`. Remaining owner steps before go-live: (1) create SendGrid account on the free tier, (2) Single Sender verification for `info@primrosetrustedcare.com`, (3) generate an API key, (4) set `MAIL_PROVIDER=sendgrid`, `MAIL_API_KEY=…`, `MAIL_FROM=info@primrosetrustedcare.com`, `MAIL_TO=info@primrosetrustedcare.com` in the PaaS dashboard.
 - [ ] Fill in real founder names + bios + portraits (replacing placeholders in [`content/founders.json`](content/founders.json)).
 - [ ] Fill in real contact info, service area, hours in [`content/pages/contact.md`](content/pages/contact.md).
 - [ ] Replace placeholder testimonials in [`content/testimonials.json`](content/testimonials.json) with real attributed quotes (with written consent).

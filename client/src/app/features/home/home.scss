@@ -1,15 +1,25 @@
 .hero {
-  background: linear-gradient(
-    180deg,
-    var(--color-brand-blush, #f8dce5) 0%,
-    var(--color-brand-rose, #eba3c2) 100%
-  );
-  padding: 4rem 1.25rem 5rem;
-  text-align: center;
+  padding: 2.5rem 1.25rem 3rem;
 
   .hero-inner {
-    max-width: 760px;
+    max-width: 1000px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .hero-logo {
+    display: block;
+    width: min(320px, 75vw);
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  .hero-content {
+    text-align: center;
+    max-width: 560px;
   }
 
   h1 {
@@ -31,6 +41,15 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero .hero-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
   }
 }
 
@@ -60,11 +79,16 @@
   display: grid;
   gap: 1rem;
   grid-template-columns: 1fr;
+}
 
+.testimonials,
+.testimonial-carousel {
   blockquote {
     margin: 0 0 0.75rem;
     font-style: italic;
     color: var(--color-ui-text, #2a1f22);
+    font-size: 1.05rem;
+    line-height: 1.6;
   }
 
   .attribution {
@@ -74,10 +98,75 @@
   }
 }
 
+.testimonial-carousel {
+  max-width: 620px;
+  margin: 0 auto;
+
+  /* Stack every slide into the same grid cell so the track is always sized to
+     the tallest testimonial — page layout below doesn't shift when slides change. */
+  .carousel-track {
+    display: grid;
+    grid-template-areas: 'stack';
+  }
+
+  .carousel-slide {
+    grid-area: stack;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+  }
+
+  .carousel-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border-radius: 50%;
+    border: 0;
+    background: var(--color-brand-rosewood, #8e5a5a);
+    opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+
+    &:hover { opacity: 0.55; }
+
+    &.active {
+      opacity: 1;
+      background: var(--color-brand-crimson, #d33041);
+      transform: scale(1.15);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-ui-focus-ring, #e84d8e);
+      outline-offset: 3px;
+    }
+  }
+}
+
+
 .category-grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
   grid-template-columns: 1fr;
+  justify-items: center;
+
+  app-card {
+    width: 100%;
+    max-width: 400px;
+  }
 
   h3 {
     margin: 0 0 0.25rem;
@@ -89,18 +178,16 @@
     color: var(--color-brand-rosewood, #8e5a5a);
     font-style: italic;
   }
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    li {
-      padding: 0.25rem 0;
-      a {
-        color: var(--color-brand-crimson, #d33041);
-        text-decoration: none;
-        &:hover { text-decoration: underline; }
-      }
-    }
+  .svc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .svc-link {
+    color: var(--color-brand-crimson, #d33041);
+    text-decoration: none;
+    padding: 0.125rem 0;
+    &:hover { text-decoration: underline; }
   }
 }
 
@@ -116,5 +203,9 @@
 
 @media (min-width: 768px) {
   .testimonials { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-  .category-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 400px));
+    gap: 2.5rem;
+    justify-content: center;
+  }
 }

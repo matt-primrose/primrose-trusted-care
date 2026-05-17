@@ -1,13 +1,16 @@
+import sgMail from '@sendgrid/mail';
 import { logger } from '../logger.js';
 
 /**
  * MailService interface:
- *   send({ to, from, subject, text, html, attachments }) → Promise<void>
+ *   send({ to, from, replyTo, subject, text, html, attachments }) → Promise<void>
+ *
+ *   attachments items are { filename, content (Buffer), contentType }.
  *
  * Active provider is selected by process.env.MAIL_PROVIDER:
  *   - 'console' (default) — logs the email instead of sending. Safe for dev.
- *   - 'sendgrid' — stub; needs @sendgrid/mail wired up before launch.
- *   - 'postmark' — stub; needs postmark wired up before launch.
+ *   - 'sendgrid' — live, uses @sendgrid/mail. Requires MAIL_API_KEY in env.
+ *   - 'postmark' — stub; not implemented in v1.
  */
 
 export function createMailService(env = process.env) {
@@ -49,11 +52,46 @@ function createSendGridMailService(env) {
   if (!env.MAIL_API_KEY) {
     throw new Error('MAIL_PROVIDER=sendgrid requires MAIL_API_KEY');
   }
+  sgMail.setApiKey(env.MAIL_API_KEY);
+
   return {
     name: 'sendgrid',
-    async send(_message) {
-      // TODO: install @sendgrid/mail and wire up sgMail.send(_message)
-      throw new Error('SendGrid provider stub — wire up @sendgrid/mail before using');
+    async send(message) {
+      const payload = {
+        to: message.to,
+        from: message.from,
+        subject: message.subject,
+        text: message.text,
+      };
+      if (message.replyTo) payload.replyTo = message.replyTo;
+      if (message.html) payload.html = message.html;
+      if (message.attachments?.length) {
+        payload.attachments = message.attachments.map((a) => ({
+          content: a.content.toString('base64'),
+          filename: a.filename,
+          type: a.contentType,
+          disposition: 'attachment',
+        }));
+      }
+
+      try {
+        const [response] = await sgMail.send(payload);
+        logger.info(
+          {
+            sendgrid: {
+              statusCode: response?.statusCode,
+              messageId: response?.headers?.['x-message-id'],
+            },
+          },
+          'sendgrid send ok',
+        );
+      } catch (err) {
+        logger.error(
+          { err: err.message, body: err.response?.body },
+          'sendgrid send failed',
+        );
+        throw err;
+      }
     },
   };
 }

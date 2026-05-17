@@ -1,32 +1,82 @@
 <section class="hero">
   <div class="hero-inner">
-    <h1>Care your family can trust.</h1>
-    <p class="lede">
-      Every Primrose Trusted Care provider is personally vetted, background-checked, and
-      credential-verified — because peace of mind shouldn't be optional.
-    </p>
-    <div class="cta-row">
-      <a routerLink="/services" class="btn primary">Explore Services</a>
-      <a routerLink="/contact" class="btn ghost">Get in Touch</a>
+    <img
+      src="/brand-assets/ptc-child-care-transparent.png"
+      alt="Primrose Trusted Care"
+      class="hero-logo"
+    />
+    <div class="hero-content">
+      <h1>Care your family can trust.</h1>
+      <p class="lede">
+        Every Primrose Trusted Care provider is personally vetted, background-checked, and
+        credential-verified — because peace of mind shouldn't be optional.
+      </p>
+      <div class="cta-row">
+        <a routerLink="/services" class="btn primary">Explore Services</a>
+        <a routerLink="/contact" class="btn ghost">Get in Touch</a>
+      </div>
     </div>
   </div>
 </section>
 
 <app-section heading="Trusted by Families">
-  @if (featuredTestimonials().length === 0) {
+  @if (testimonialList().length === 0) {
     <p class="muted">Testimonials coming soon.</p>
+  } @else if (useCarousel()) {
+    <div
+      class="testimonial-carousel"
+      (mouseenter)="setCarouselPaused(true)"
+      (mouseleave)="setCarouselPaused(false)"
+      (focusin)="setCarouselPaused(true)"
+      (focusout)="setCarouselPaused(false)"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Testimonials from families we serve"
+    >
+      <div class="carousel-track">
+        @for (t of testimonialList(); track t.id; let i = $index) {
+          <app-card
+            class="carousel-slide"
+            [class.active]="i === carouselIndex()"
+            [attr.aria-hidden]="i !== carouselIndex()"
+          >
+            <blockquote>“{{ t.quote }}”</blockquote>
+            <p class="attribution">
+              — {{ t.attribution }}@if (t.location) {, {{ t.location }}}
+            </p>
+          </app-card>
+        }
+      </div>
+      <div class="carousel-dots" role="tablist" aria-label="Choose testimonial">
+        @for (t of testimonialList(); track t.id; let i = $index) {
+          <button
+            type="button"
+            class="carousel-dot"
+            [class.active]="i === carouselIndex()"
+            [attr.aria-selected]="i === carouselIndex()"
+            role="tab"
+            (click)="gotoTestimonial(i)"
+          >
+            <span class="sr-only"
+              >Show testimonial {{ i + 1 }} of {{ testimonialList().length }}</span
+            >
+          </button>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="testimonials">
+      @for (t of testimonialList(); track t.id) {
+        <app-card>
+          <blockquote>“{{ t.quote }}”</blockquote>
+          <p class="attribution">— {{ t.attribution }}@if (t.location) {, {{ t.location }}}</p>
+        </app-card>
+      }
+    </div>
   }
-  <div class="testimonials">
-    @for (t of featuredTestimonials(); track t.id) {
-      <app-card>
-        <blockquote>“{{ t.quote }}”</blockquote>
-        <p class="attribution">— {{ t.attribution }}@if (t.location) {, {{ t.location }}}</p>
-      </app-card>
-    }
-  </div>
 </app-section>
 
-<app-section heading="Services We Offer" [tinted]="true">
+<app-section heading="Services We Offer">
   <div class="category-grid">
     @for (cat of categories(); track cat.id) {
       <app-card>
@@ -34,13 +84,13 @@
         @if (cat.tagline) {
           <p class="tagline">{{ cat.tagline }}</p>
         }
-        <ul>
+        <div class="svc-list" role="list">
           @for (svc of cat.services; track svc.id) {
             @if (svc.active) {
-              <li><a [routerLink]="['/services', svc.id]">{{ svc.name }}</a></li>
+              <a [routerLink]="['/services', svc.id]" role="listitem" class="svc-link">{{ svc.name }}</a>
             }
           }
-        </ul>
+        </div>
       </app-card>
     }
   </div>
@@ -54,6 +104,6 @@
     Bring your gifts to families in your community. We help vetted providers find trusted work.
   </p>
   <p class="centered">
-    <a routerLink="/become-a-provider" class="btn primary">Apply to Provide</a>
+    <a routerLink="/become-a-provider" class="btn primary">Apply Now</a>
   </p>
 </app-section>

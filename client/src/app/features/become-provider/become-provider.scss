@@ -65,10 +65,13 @@
   }
 
   .file-upload .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
     margin: 0.5rem 0 0;
-    padding-left: 1.25rem;
     color: var(--color-ui-text, #2a1f22);
     font-weight: 400;
+    font-size: 0.9rem;
   }
 
   .consent {

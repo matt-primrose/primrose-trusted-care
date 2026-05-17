@@ -24,7 +24,13 @@ html {
 body {
   font-family: var(--font-body);
   color: var(--color-ui-text);
-  background: var(--color-ui-surface);
+  background: linear-gradient(
+    to bottom,
+    var(--color-brand-blush) 0%,
+    var(--color-brand-rose) 100%
+  );
+  background-repeat: no-repeat;
+  min-height: 100vh;
   line-height: 1.5;
 }
 

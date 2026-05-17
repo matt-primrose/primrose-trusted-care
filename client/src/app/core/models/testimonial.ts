@@ -3,7 +3,6 @@ export interface Testimonial {
   quote: string;
   attribution: string;
   location?: string;
-  featured: boolean;
 }
 
 export interface TestimonialsContent {
