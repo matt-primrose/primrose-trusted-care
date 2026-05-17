@@ -42,9 +42,9 @@
                 "localhost",
                 "127.0.0.1",
                 "::1",
-                ".preview.c24.airoapp.ai",
+                "*.preview.c24.airoapp.ai",
                 "primrosetrustedcare.com",
-                ".primrosetrustedcare.com"
+                "*.primrosetrustedcare.com"
               ]
             },
             "ssr": {

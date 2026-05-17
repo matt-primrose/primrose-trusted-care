@@ -29,7 +29,8 @@
       "PowerShell(\"Stopped\")",
       "Bash(npx eslint *)",
       "Bash(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000__TRACKED_VAR__)",
-      "WebFetch(domain:host.beta.godaddy.com)"
+      "WebFetch(domain:host.beta.godaddy.com)",
+      "WebFetch(domain:angular.dev)"
     ]
   }
 }
