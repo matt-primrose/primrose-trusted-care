@@ -2,11 +2,6 @@
 
 We'd love to hear from you. Reach out with questions about our services, to schedule an intake conversation, or to refer a family who could use the help.
 
-## Contact
-
-- **Email:** info@primrosetrustedcare.com
-- **Phone:** 480-328-2722
-- **Office hours:** By appointment only
 
 ## Service Area
 
