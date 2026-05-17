@@ -1,19 +1,19 @@
 {
-  "_note": "Photo refs currently point to a placeholder asset. Replace with real founder portraits when available.",
+  "_note": "Founder portraits are circular headshots cropped from brand-assets/ptc-founders.jpeg. Re-crop via the PowerShell + System.Drawing recipe if a new source photo lands.",
   "founders": [
     {
       "id": "sara-primrose",
       "name": "Sara Primrose",
       "role": "CEO & Founder",
-      "photoRef": "/brand-assets/ptc-christ.png",
+      "photoRef": "/brand-assets/ptc-founder-sara.png",
       "bio": "Sara founded Primrose Trusted Care after a decade of helping families in her community find caregivers they could actually trust. She's seen firsthand how hard it is to know who's coming into your home — and built PTC to take that burden off families' shoulders. Every provider on the roster has been personally vetted and credential-verified. When she's not interviewing new providers, Sara is most likely chasing her own kids around the yard."
     },
     {
-      "id": "co-founder-tbd",
-      "name": "TBD — Co-Founder",
-      "role": "Co-Founder",
-      "photoRef": "/brand-assets/ptc-christ.png",
-      "bio": "Placeholder bio. Replace with the co-founder's bio when ready: a couple of sentences on their background, why they joined Primrose Trusted Care, and what they care about most in family services. Aim for around 100–150 words and keep the tone warm and personal."
+      "id": "barbie-castorena",
+      "name": "Barbie Castorena",
+      "role": "Managing Partner",
+      "photoRef": "/brand-assets/ptc-founder-barbie.png",
+      "bio": "Placeholder bio. Replace with the managing partner's bio when ready: a couple of sentences on their background, why they joined Primrose Trusted Care, and what they care about most in family services. Aim for around 100–150 words and keep the tone warm and personal."
     }
   ]
 }

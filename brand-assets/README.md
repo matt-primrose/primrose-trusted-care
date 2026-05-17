@@ -7,9 +7,10 @@ This directory is the **single source of truth** for Primrose Trusted Care brand
 | File | Purpose |
 | --- | --- |
 | [`palette.json`](palette.json) | Design tokens (colors, typography, logo metadata). Mirrored into `client/src/styles/_tokens.scss`. |
-| [`ptc-christ.png`](ptc-christ.png) | **PtC monogram** — PtC with the cross-shaped `t`. Used in the site header and footer as a small brand mark, and in formal/print contexts (business cards, letterhead, signature blocks). The brand's identity mark. |
+| [`ptc-christ.png`](ptc-christ.png) | **PtC monogram** (square, white background) — PtC with the cross-shaped `t`. Used in the site header and footer (CSS-clipped to a circle via `border-radius: 50%`), and in formal/print contexts. The brand's identity mark. |
+| [`ptc-christ-circle.png`](ptc-christ-circle.png) | **PtC monogram** (circular, white background preserved, corners transparent) — same monogram clipped to an inscribed circle. Use as the browser-tab favicon and anywhere a true round shape is needed without relying on CSS clipping. |
 | [`ptc-child-care.png`](ptc-child-care.png) | **Illustrated mark** (white background) — baby with pacifier. Use on white surfaces. |
-| [`ptc-child-care-transparent.png`](ptc-child-care-transparent.png) | **Illustrated mark** (transparent background) — same illustration with white pixels converted to alpha=0. Use on colored/gradient surfaces (hero, favicon, anywhere over the body gradient) so the logo doesn't show a white square halo. |
+| [`ptc-child-care-transparent.png`](ptc-child-care-transparent.png) | **Illustrated mark** (transparent background) — same illustration with white pixels (including letter counters) converted to alpha=0. Use on colored/gradient surfaces (e.g., the home hero) so the logo doesn't show a white square halo. |
 | [`ptc-color-palette.jpeg`](ptc-color-palette.jpeg) | Color reference image. The source of the eyedropper-approximated hex values in `palette.json` (draft until verified against the master design file). |
 | [`ptc-font-example.JPG`](ptc-font-example.JPG) | Business-card photo used to identify the typography pairing (Cinzel display, Lato body, Allura script accent). |
 
