@@ -372,7 +372,7 @@ PaaS apps can make **outbound connections only on ports 80 and 443**, plus GoDad
 
 ### First-deploy checklist (do before going live)
 - [ ] Confirm Node.js **22.x** is selectable in the PaaS dashboard. The public app-requirements page doesn't list supported versions — verify before relying on it.
-- [ ] Add the production domain (and any wildcard like `.primrosetrustedcare.com`) to `security.allowedHosts` in [`client/angular.json`](client/angular.json) and rebuild. Angular's SSR will return 400s for hosts not on the list.
+- [ ] Add the production domain (and any wildcard like `.primrosetrustedcare.com`) to `security.allowedHosts` in [`client/angular.json`](client/angular.json) and rebuild. Angular's SSR will return 400s for hosts not on the list. PaaS preview URLs (`*.preview.c24.airoapp.ai`) are already allowed.
 - [ ] Set all required env vars in the PaaS dashboard.
 - [ ] Mail provider has the production sender verified.
 - [ ] Trigger a deploy. Once the URL is live, test the contact and provider forms end-to-end and confirm an email arrives.
