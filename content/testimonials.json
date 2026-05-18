@@ -10,6 +10,11 @@
       "id": "placeholder-2",
       "src": "/brand-assets/ptc-kid-2.jpeg",
       "alt": "Sisters playing together on the floor laughing and having fun."
+    },
+    {
+      "id": "placeholder-3",
+      "src": "/brand-assets/ptc-kid-4.jpeg",
+      "alt": "Child helping to prepare a meal in the kitchen."
     }
   ],
   "testimonials": [
@@ -23,6 +28,12 @@
       "id": "placeholder-5",
       "quote": "We are beyond grateful to have had Sara with Primrose Trusted Care as our nanny. She was truly a blessing to our family. From the moment she started, Sara showed incredible warmth, patience, and genuine care for our children. Her nurturing spirit and joyful energy made every day brighter and safer for our little ones.  Sara is not only reliable and punctual but also incredibly creative, always coming up with fun and educational activities that kept our kids engaged and happy. She anticipated their needs with ease and communicated clearly with us, making us feel completely at ease whenever we’re away.  Her professionalism and dedication go above and beyond what we could have hoped for. Sara isn’t just a nanny; she has become a trusted and cherished member of our family. We wholeheartedly recommend Primrose Trusted Care to any family looking for care.",
       "attribution": "Bella B.",
+      "location": "Mesa, AZ"
+    },
+    {
+      "id": "placeholder-6",
+      "quote": "We are so grateful to have found Sara through Primrose Trusted Care! She brings extensive childcare experience while also being incredibly professional, reliable, and communicative. Her thoughtful approach, attention to detail, and creativity with the kids immediately put us at ease and gave us confidence that our children were in excellent hands. After struggling in the past to find dependable childcare, we truly feel fortunate to have found Primrose Trusted Care.",
+      "attribution": "Alison H.",
       "location": "Mesa, AZ"
     }
   ]
