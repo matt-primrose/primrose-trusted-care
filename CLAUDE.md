@@ -409,6 +409,7 @@ Before every change, satisfy this checklist:
 8. **SSE channel is for confirmation events only in v1.** Don't reuse it for unrelated flows without architectural review.
 9. **Don't write to server disk for user data.** Uploads stream straight into the outbound email.
 10. **If brand assets are missing,** leave placeholders (`TBD-PALETTE`, `TBD-LOGO`) — do not invent colors, typography, or imagery.
+11. **Rebuild after every code change before asking the owner to verify in the browser.** The owner runs the site from the built bundle (`npm start` against `client/dist/`), not from `ng serve` with HMR. After editing SCSS, TypeScript, HTML, or content files, run `npm run build` from the repo root and only then declare a UI/visual change done. Don't trust "the dev server should hot-reload" reasoning — it doesn't apply here.
 
 ---
 

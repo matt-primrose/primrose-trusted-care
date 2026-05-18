@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Section } from '../../shared/section/section';
 import { ContentService } from '../../core/content.service';
@@ -10,6 +10,8 @@ import { Founder } from '../../core/models/founder';
   imports: [Section],
   templateUrl: './about.html',
   styleUrl: './about.scss',
+  // Disabled so .mission rules can reach the markdown-injected <h1> via [innerHTML].
+  encapsulation: ViewEncapsulation.None,
 })
 export class About implements OnInit {
   private content = inject(ContentService);

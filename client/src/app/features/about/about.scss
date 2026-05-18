@@ -6,7 +6,10 @@
   text-align: center;
 
   :is(h1, h2, h3) {
-    font-family: var(--font-display, 'Cinzel', serif);
+    font-family: var(--font-script, 'Allura', cursive);
+    font-weight: 400;
+    letter-spacing: normal;
+    font-size: 3rem;
     color: var(--color-brand-rosewood, #8e5a5a);
   }
 }
@@ -56,5 +59,8 @@
 }
 
 @media (min-width: 768px) {
-  .founders { grid-template-columns: 1fr 1fr; gap: 4rem; }
+  .founders {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
 }
