@@ -16,6 +16,13 @@
   </button>
 
   <nav id="primary-nav" [class.is-open]="menuOpen()">
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="closeMenu()"
+      >Home</a
+    >
     <a routerLink="/services" routerLinkActive="active" (click)="closeMenu()">Services</a>
     <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About</a>
     <a routerLink="/testimonials" routerLinkActive="active" (click)="closeMenu()">Testimonials</a>

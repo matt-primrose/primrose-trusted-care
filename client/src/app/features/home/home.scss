@@ -103,10 +103,13 @@
   margin: 0 auto;
 
   /* Stack every slide into the same grid cell so the track is always sized to
-     the tallest testimonial — page layout below doesn't shift when slides change. */
+     the tallest slide (page below doesn't shift when slides change). Each slide
+     sizes to its own content via place-items: center — testimonial cards wrap
+     their text, image cards wrap their picture like a mat. */
   .carousel-track {
     display: grid;
     grid-template-areas: 'stack';
+    place-items: center;
   }
 
   .carousel-slide {
@@ -115,6 +118,15 @@
     pointer-events: none;
     transform: translateY(4px);
     transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+  }
+
+  .carousel-image {
+    display: block;
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    border-radius: 6px;
   }
 
   .carousel-slide.active {

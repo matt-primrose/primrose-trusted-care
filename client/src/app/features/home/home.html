@@ -20,7 +20,7 @@
 </section>
 
 <app-section heading="Trusted by Families">
-  @if (testimonialList().length === 0) {
+  @if (carouselSlides().length === 0) {
     <p class="muted">Testimonials coming soon.</p>
   } @else if (useCarousel()) {
     <div
@@ -31,34 +31,43 @@
       (focusout)="setCarouselPaused(false)"
       role="region"
       aria-roledescription="carousel"
-      aria-label="Testimonials from families we serve"
+      aria-label="Testimonials and photos from families we serve"
     >
       <div class="carousel-track">
-        @for (t of testimonialList(); track t.id; let i = $index) {
+        @for (slide of carouselSlides(); track slide.data.id; let i = $index) {
           <app-card
             class="carousel-slide"
             [class.active]="i === carouselIndex()"
             [attr.aria-hidden]="i !== carouselIndex()"
           >
-            <blockquote>“{{ t.quote }}”</blockquote>
-            <p class="attribution">
-              — {{ t.attribution }}@if (t.location) {, {{ t.location }}}
-            </p>
+            @if (slide.kind === 'testimonial') {
+              <blockquote>“{{ slide.data.quote }}”</blockquote>
+              <p class="attribution">
+                — {{ slide.data.attribution }}@if (slide.data.location) {, {{ slide.data.location }}}
+              </p>
+            } @else {
+              <img
+                [src]="slide.data.src"
+                alt=""
+                [attr.alt]="slide.data.alt"
+                class="carousel-image"
+              />
+            }
           </app-card>
         }
       </div>
-      <div class="carousel-dots" role="tablist" aria-label="Choose testimonial">
-        @for (t of testimonialList(); track t.id; let i = $index) {
+      <div class="carousel-dots" role="tablist" aria-label="Choose slide">
+        @for (slide of carouselSlides(); track slide.data.id; let i = $index) {
           <button
             type="button"
             class="carousel-dot"
             [class.active]="i === carouselIndex()"
             [attr.aria-selected]="i === carouselIndex()"
             role="tab"
-            (click)="gotoTestimonial(i)"
+            (click)="gotoSlide(i)"
           >
             <span class="sr-only"
-              >Show testimonial {{ i + 1 }} of {{ testimonialList().length }}</span
+              >Show slide {{ i + 1 }} of {{ carouselSlides().length }}</span
             >
           </button>
         }
@@ -66,11 +75,19 @@
     </div>
   } @else {
     <div class="testimonials">
-      @for (t of testimonialList(); track t.id) {
-        <app-card>
-          <blockquote>“{{ t.quote }}”</blockquote>
-          <p class="attribution">— {{ t.attribution }}@if (t.location) {, {{ t.location }}}</p>
-        </app-card>
+      @for (slide of carouselSlides(); track slide.data.id) {
+        @if (slide.kind === 'testimonial') {
+          <app-card>
+            <blockquote>“{{ slide.data.quote }}”</blockquote>
+            <p class="attribution">
+              — {{ slide.data.attribution }}@if (slide.data.location) {, {{ slide.data.location }}}
+            </p>
+          </app-card>
+        } @else {
+          <app-card>
+            <img [src]="slide.data.src" alt="" [attr.alt]="slide.data.alt" class="carousel-image" />
+          </app-card>
+        }
       }
     </div>
   }

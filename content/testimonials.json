@@ -1,5 +1,17 @@
 {
-  "_note": "Placeholder testimonials. Replace with real, attributed quotes (with written consent) before launch. All entries surface on both the home carousel and the /testimonials list.",
+  "_note": "Testimonials surface on both the home carousel and the /testimonials list. Photos in 'images' below interleave with testimonials in the home carousel only (not shown on /testimonials).",
+  "images": [
+    {
+      "id": "placeholder-1",
+      "src": "/brand-assets/ptc-kid-1.jpeg",
+      "alt": "Child jumping into the air with joy and excitement."
+    },
+    {
+      "id": "placeholder-2",
+      "src": "/brand-assets/ptc-kid-2.jpeg",
+      "alt": "Sisters playing together on the floor laughing and having fun."
+    }
+  ],
   "testimonials": [
     {
       "id": "placeholder-4",

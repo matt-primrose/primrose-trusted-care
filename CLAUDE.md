@@ -172,7 +172,7 @@ Two-level taxonomy. **Do not flatten.** Adding a service should never require to
 
 ### Other content files
 - `content/founders.json` — array of `{ id, name, role, photoRef, bio }`. Used by the About page.
-- `content/testimonials.json` — array of `{ id, quote, attribution, location }`. The same list surfaces on both the home-page carousel and the `/testimonials` page.
+- `content/testimonials.json` — two arrays: `testimonials` (each `{ id, quote, attribution, location }`) and an optional `images` (each `{ id, src, alt }`). The testimonials list surfaces on both the home-page carousel and the `/testimonials` page. The images array surfaces **only** on the home carousel, interleaved with testimonials (T, I, T, I, …), so the rotation cycles between quotes and photos.
 - `content/pages/*.md` — long-form copy (mission, FAQ, privacy, etc.) rendered through a markdown component.
 
 ---
@@ -375,7 +375,7 @@ PaaS apps can make **outbound connections only on ports 80 and 443**, plus GoDad
 
 ### First-deploy checklist (do before going live)
 - [ ] Confirm Node.js **22.x** is selectable in the PaaS dashboard. The public app-requirements page doesn't list supported versions — verify before relying on it.
-- [ ] Add the production domain (and any wildcard like `.primrosetrustedcare.com`) to `security.allowedHosts` in [`client/angular.json`](client/angular.json) and rebuild. Angular's SSR will return 400s for hosts not on the list. PaaS preview URLs (`*.preview.c24.airoapp.ai`) and published URLs (`*.c24.airoapp.ai`) are already allowed.
+- [ ] Add the production domain (and any wildcard like `.primrosetrustedcare.com`) to `security.allowedHosts` in [`client/angular.json`](client/angular.json) and rebuild. Angular's SSR will return 400s for hosts not on the list. PaaS preview URLs (`*.preview.c24.airoapp.ai`) are already allowed.
 - [ ] Set all required env vars in the PaaS dashboard.
 - [ ] Mail provider has the production sender verified.
 - [ ] Trigger a deploy. Once the URL is live, test the contact and provider forms end-to-end and confirm an email arrives.

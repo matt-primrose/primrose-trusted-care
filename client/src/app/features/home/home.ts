@@ -14,10 +14,14 @@ import { Card } from '../../shared/card/card';
 import { ContentService } from '../../core/content.service';
 import { MetaService } from '../../core/meta.service';
 import { ServiceCategory } from '../../core/models/service';
-import { Testimonial } from '../../core/models/testimonial';
+import {
+  CarouselImage,
+  CarouselSlide,
+  Testimonial,
+} from '../../core/models/testimonial';
 
 const CAROUSEL_INTERVAL_MS = 10000;
-const CAROUSEL_THRESHOLD = 1; // > this many featured testimonials → switch to carousel (so 2+)
+const CAROUSEL_THRESHOLD = 1; // carousel kicks in when total slides > this (so 2+)
 
 @Component({
   selector: 'app-home',
@@ -33,9 +37,23 @@ export class Home implements OnInit {
 
   protected readonly categories = signal<ServiceCategory[]>([]);
   protected readonly testimonialList = signal<Testimonial[]>([]);
+  protected readonly carouselImages = signal<CarouselImage[]>([]);
+
+  /** Interleaves testimonials and images: T, I, T, I, ... longer list's remainder appends at end. */
+  protected readonly carouselSlides = computed<CarouselSlide[]>(() => {
+    const t = this.testimonialList();
+    const i = this.carouselImages();
+    const slides: CarouselSlide[] = [];
+    const max = Math.max(t.length, i.length);
+    for (let n = 0; n < max; n++) {
+      if (n < t.length) slides.push({ kind: 'testimonial', data: t[n] });
+      if (n < i.length) slides.push({ kind: 'image', data: i[n] });
+    }
+    return slides;
+  });
 
   protected readonly useCarousel = computed(
-    () => this.testimonialList().length > CAROUSEL_THRESHOLD,
+    () => this.carouselSlides().length > CAROUSEL_THRESHOLD,
   );
   protected readonly carouselIndex = signal(0);
   protected readonly carouselPaused = signal(false);
@@ -44,7 +62,7 @@ export class Home implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       const id = setInterval(() => {
         if (this.useCarousel() && !this.carouselPaused()) {
-          this.nextTestimonial();
+          this.nextSlide();
         }
       }, CAROUSEL_INTERVAL_MS);
       this.destroyRef.onDestroy(() => clearInterval(id));
@@ -60,25 +78,28 @@ export class Home implements OnInit {
 
     const [services, testimonials] = await Promise.all([
       this.content.loadServices().catch(() => ({ categories: [] })),
-      this.content.loadTestimonials().catch(() => ({ testimonials: [] })),
+      this.content
+        .loadTestimonials()
+        .catch(() => ({ testimonials: [], images: [] })),
     ]);
     this.categories.set(services.categories);
     this.testimonialList.set(testimonials.testimonials);
+    this.carouselImages.set(testimonials.images ?? []);
   }
 
-  nextTestimonial(): void {
-    const len = this.testimonialList().length;
+  nextSlide(): void {
+    const len = this.carouselSlides().length;
     if (len === 0) return;
     this.carouselIndex.update((i) => (i + 1) % len);
   }
 
-  prevTestimonial(): void {
-    const len = this.testimonialList().length;
+  prevSlide(): void {
+    const len = this.carouselSlides().length;
     if (len === 0) return;
     this.carouselIndex.update((i) => (i - 1 + len) % len);
   }
 
-  gotoTestimonial(i: number): void {
+  gotoSlide(i: number): void {
     this.carouselIndex.set(i);
   }
 
