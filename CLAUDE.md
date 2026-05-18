@@ -40,7 +40,7 @@ The service catalog is intentionally **extensible** — new offerings (e.g., eld
 | Language | **Plain JS (ES modules)** on the backend, **TypeScript** on the frontend | Locked in during scaffold — no backend build step before Passenger runs the code. |
 | SSR | **Runtime SSR** via Angular's `@angular/ssr/node` | Composed in `client/src/server.ts`; our API mounts on the same Express app. |
 | Transport | **REST** for normal traffic, **SSE** for live events | See §7 for the SSE contract. |
-| Email | **Transactional API** (SendGrid or Postmark) | Wrapped behind a `MailService` interface; provider is swappable. |
+| Email | **Transactional API** (Resend; Postmark stub kept as fallback) | Wrapped behind a `MailService` interface; provider is swappable. Resend chosen for its permanent free tier (3,000 emails/mo) — SendGrid's 60-day trial was a bad fit for this site's expected volume of ~10 submissions/mo. |
 | Persistence | **None in v1** | Forms deliver to email; that inbox is the system of record. |
 | Auth | **None in v1** | Site is fully public. |
 | Anti-spam | **Honeypot field + per-IP rate limit** | No third-party captcha — overkill at this scale. |
@@ -70,7 +70,7 @@ primrose-trusted-care/
 │   │   │   ├── content.js       # GET  /api/content/*  (services/founders/testimonials/pages)
 │   │   │   └── events.js        # GET  /api/events     (SSE channel)
 │   │   ├── services/
-│   │   │   ├── mail.js          # MailService factory: console (default) | sendgrid (stub) | postmark (stub)
+│   │   │   ├── mail.js          # MailService factory: console (default) | resend (live) | postmark (stub)
 │   │   │   ├── events.js        # SSE broadcaster (in-memory bus)
 │   │   │   └── content-loader.js  # reads + caches content/*.json + pages/*.md (mtime invalidation)
 │   │   └── middleware/
@@ -362,7 +362,7 @@ For a small marketing site that changes infrequently, either works. Pick GitHub 
 ### Environment variables
 Set these in the PaaS dashboard. **Never commit them.** Same shape as `.env.example` at the repo root:
 - `NODE_ENV=production`
-- `MAIL_PROVIDER=sendgrid` (or `postmark`)
+- `MAIL_PROVIDER=resend` (or `postmark`)
 - `MAIL_API_KEY=...`
 - `MAIL_FROM=...` — verified sender address
 - `MAIL_TO=...` — where submissions land
@@ -371,7 +371,7 @@ Set these in the PaaS dashboard. **Never commit them.** Same shape as `.env.exam
 `PORT` is set automatically by PaaS; our app already reads `process.env.PORT`.
 
 ### Network constraints
-PaaS apps can make **outbound connections only on ports 80 and 443**, plus GoDaddy-managed databases. SendGrid and Postmark both serve on 443, so we're fine. If we ever add a new external integration, verify it's HTTPS before assuming it'll work.
+PaaS apps can make **outbound connections only on ports 80 and 443**, plus GoDaddy-managed databases. Resend (`api.resend.com`) and Postmark both serve on 443, so we're fine. If we ever add a new external integration, verify it's HTTPS before assuming it'll work.
 
 ### First-deploy checklist (do before going live)
 - [ ] Confirm Node.js **22.x** is selectable in the PaaS dashboard. The public app-requirements page doesn't list supported versions — verify before relying on it.
@@ -438,7 +438,7 @@ Status of scaffold and remaining pre-launch items:
 
 **Still needed before launch:**
 - [ ] **Verify the palette hex values** in [`brand-assets/palette.json`](brand-assets/palette.json) against the source design file — current values are eyedropper-approximated from the JPEG and marked `0.1.0-draft`.
-- [x] Choose transactional email provider — **SendGrid** selected; live adapter wired up in [`server/src/services/mail.js`](server/src/services/mail.js) using `@sendgrid/mail`. Remaining owner steps before go-live: (1) create SendGrid account on the free tier, (2) Single Sender verification for `info@primrosetrustedcare.com`, (3) generate an API key, (4) set `MAIL_PROVIDER=sendgrid`, `MAIL_API_KEY=…`, `MAIL_FROM=info@primrosetrustedcare.com`, `MAIL_TO=info@primrosetrustedcare.com` in the PaaS dashboard.
+- [x] Choose transactional email provider — **Resend** selected (switched from SendGrid 2026-05-18 because SendGrid's free tier is a 60-day trial, not a permanent tier; Resend gives 3,000 emails/mo free forever, which comfortably covers expected volume). Live adapter wired up in [`server/src/services/mail.js`](server/src/services/mail.js) using the `resend` npm package. Remaining owner steps before go-live: (1) create a Resend account at [resend.com](https://resend.com), (2) verify the `primrosetrustedcare.com` domain by adding the SPF/DKIM DNS records Resend provides, (3) generate an API key at [resend.com/api-keys](https://resend.com/api-keys), (4) set `MAIL_PROVIDER=resend`, `MAIL_API_KEY=re_…`, `MAIL_FROM=info@primrosetrustedcare.com`, `MAIL_TO=info@primrosetrustedcare.com` in the PaaS dashboard.
 - [ ] Fill in real founder names + bios + portraits (replacing placeholders in [`content/founders.json`](content/founders.json)).
 - [ ] Fill in real contact info, service area, hours in [`content/pages/contact.md`](content/pages/contact.md).
 - [ ] Replace placeholder testimonials in [`content/testimonials.json`](content/testimonials.json) with real attributed quotes (with written consent).

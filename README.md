@@ -57,7 +57,7 @@ Copy `.env.example` to `.env` and fill in the values you need. Required for live
 | Variable | Purpose |
 | --- | --- |
 | `PORT` | Listen port (Passenger sets this automatically) |
-| `MAIL_PROVIDER` | `console` (dev default), `sendgrid`, or `postmark` |
+| `MAIL_PROVIDER` | `console` (dev default), `resend`, or `postmark` |
 | `MAIL_API_KEY` | API key for the chosen provider |
 | `MAIL_FROM` | The sender address (must be verified with the provider) |
 | `MAIL_TO` | The recipient address (where form submissions land) |

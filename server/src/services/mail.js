@@ -1,4 +1,4 @@
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 import { logger } from '../logger.js';
 
 /**
@@ -9,7 +9,7 @@ import { logger } from '../logger.js';
  *
  * Active provider is selected by process.env.MAIL_PROVIDER:
  *   - 'console' (default) — logs the email instead of sending. Safe for dev.
- *   - 'sendgrid' — live, uses @sendgrid/mail. Requires MAIL_API_KEY in env.
+ *   - 'resend' — live, uses the Resend Node SDK. Requires MAIL_API_KEY in env.
  *   - 'postmark' — stub; not implemented in v1.
  */
 
@@ -19,8 +19,8 @@ export function createMailService(env = process.env) {
   switch (provider) {
     case 'console':
       return createConsoleMailService();
-    case 'sendgrid':
-      return createSendGridMailService(env);
+    case 'resend':
+      return createResendMailService(env);
     case 'postmark':
       return createPostmarkMailService(env);
     default:
@@ -48,14 +48,14 @@ function createConsoleMailService() {
   };
 }
 
-function createSendGridMailService(env) {
+function createResendMailService(env) {
   if (!env.MAIL_API_KEY) {
-    throw new Error('MAIL_PROVIDER=sendgrid requires MAIL_API_KEY');
+    throw new Error('MAIL_PROVIDER=resend requires MAIL_API_KEY');
   }
-  sgMail.setApiKey(env.MAIL_API_KEY);
+  const resend = new Resend(env.MAIL_API_KEY);
 
   return {
-    name: 'sendgrid',
+    name: 'resend',
     async send(message) {
       const payload = {
         to: message.to,
@@ -67,31 +67,21 @@ function createSendGridMailService(env) {
       if (message.html) payload.html = message.html;
       if (message.attachments?.length) {
         payload.attachments = message.attachments.map((a) => ({
-          content: a.content.toString('base64'),
           filename: a.filename,
-          type: a.contentType,
-          disposition: 'attachment',
+          content: a.content,
+          contentType: a.contentType,
         }));
       }
 
-      try {
-        const [response] = await sgMail.send(payload);
-        logger.info(
-          {
-            sendgrid: {
-              statusCode: response?.statusCode,
-              messageId: response?.headers?.['x-message-id'],
-            },
-          },
-          'sendgrid send ok',
-        );
-      } catch (err) {
-        logger.error(
-          { err: err.message, body: err.response?.body },
-          'sendgrid send failed',
-        );
-        throw err;
+      // Resend SDK returns { data, error } instead of throwing — explicit check below.
+      const { data, error } = await resend.emails.send(payload);
+
+      if (error) {
+        logger.error({ err: error }, 'resend send failed');
+        throw new Error(error.message ?? 'Resend send failed');
       }
+
+      logger.info({ resend: { id: data?.id } }, 'resend send ok');
     },
   };
 }
