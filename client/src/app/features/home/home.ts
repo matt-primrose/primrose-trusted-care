@@ -20,7 +20,7 @@ import {
   Testimonial,
 } from '../../core/models/testimonial';
 
-const CAROUSEL_INTERVAL_MS = 10000;
+const CAROUSEL_INTERVAL_MS = 5000;
 const CAROUSEL_THRESHOLD = 1; // carousel kicks in when total slides > this (so 2+)
 
 @Component({
