@@ -265,7 +265,8 @@ When swapping a family in `palette.json` later, update the `family=` parameters 
 ### Voice & tone
 - Warm, plain-spoken, trust-forward.
 - Faith undertone is expressed by **the brand mark itself** (the cross-shaped `t` in the PtC monogram) and by **values language** ("called to serve families", "community we trust", "caring for your family like our own").
-- **Do not add additional Christian iconography elsewhere on the site** — no extra crosses sprinkled across the UI, no scripture quotations, no churchy stock imagery. The brand mark carries the signal; the rest of the site reads as a warm, professional family-services brand.
+- **Do not add additional Christian iconography elsewhere on the site.** No extra crosses sprinkled across the UI, no scripture quotations, no churchy stock imagery. The brand mark carries the signal; the rest of the site reads as a warm, professional family-services brand.
+- **Avoid em-dashes (—) in user-facing text content** (Markdown pages, JSON copy, page strings). Prefer commas for parentheticals, colons for lists or specifics, periods for emphatic breaks, or short subordinate clauses. Em-dashes read as typographically loud and break the warm, conversational tone we want. This rule applies to copy only, not to code comments or this guide.
 
 ### Photography
 - Real families / real providers preferred over stock.

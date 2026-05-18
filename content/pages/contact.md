@@ -7,6 +7,8 @@ We'd love to hear from you. Reach out with questions about our services, to sche
 
 East Valley, AZ: Mesa, Gilbert, Chandler, Queen Creek, San Tan, Apache Junction
 
+Open to expanding into adjacent areas
+
 ---
 
 Prefer to send a quick note? Use the form to the right and we'll get back to you within one business day.

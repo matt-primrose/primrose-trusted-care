@@ -19,7 +19,7 @@
           "id": "part-time-nanny",
           "name": "Part-Time Nanny",
           "tagline": "Reliable, flexible coverage without the full-time commitment",
-          "description": "Steady weekday or weekend hours from the same vetted nanny — ideal for families who need consistent care on a part-time schedule. Same screening and credential verification as full-time placements.",
+          "description": "Steady weekday or weekend hours from the same vetted nanny, ideal for families who need consistent care on a part-time schedule. Same screening and credential verification as full-time placements.",
           "imageRef": "/brand-assets/ptc-child-care.png",
           "bookingNotes": "Typical placements are 10–25 hours/week, fixed or flexible. Start with an interview + paid trial.",
           "active": true
@@ -37,18 +37,18 @@
           "id": "travel-nanny",
           "name": "Travel Nanny",
           "tagline": "A trusted nanny who travels with your family",
-          "description": "Vacations, weddings, business trips, holiday gatherings — bring a familiar, vetted caregiver along so you can be present for the moments that matter. We handle scheduling and travel logistics; you handle the trip.",
+          "description": "For vacations, weddings, business trips, and holiday gatherings, bring a familiar, vetted caregiver along so you can be present for the moments that matter.",
           "imageRef": "/brand-assets/ptc-child-care.png",
-          "bookingNotes": "Book at least 2 weeks in advance. Travel and lodging billed at cost; daily care rates apply for the full trip.",
+          "bookingNotes": "Book at least 2 weeks in advance.",
           "active": true
         },
         {
           "id": "one-off-care",
           "name": "One-Off Care",
           "tagline": "Last-minute help when life happens",
-          "description": "Occasional or emergency child care — sick days, last-minute meetings, school holidays, weekend errands. The same vetted providers, scheduled in shorter blocks.",
+          "description": "Occasional or emergency child care for sick days, last-minute meetings, school holidays, and weekend errands. The same vetted providers, scheduled in shorter blocks.",
           "imageRef": "/brand-assets/ptc-child-care.png",
-          "bookingNotes": "Same-day bookings welcome but subject to availability. We'll always confirm before sending a provider.",
+          "bookingNotes": "12-hour notice preferred and subject to availability. We'll always confirm before sending a provider.",
           "active": true
         }
       ]
@@ -62,16 +62,16 @@
           "id": "mothers-helper",
           "name": "Mother's Helper",
           "tagline": "Household help while you're home with the kids",
-          "description": "An extra set of hands for the day: light tidying, laundry, meal prep, errands, and play with older children while you handle the baby or take a breath. Mother's helpers do not provide unsupervised child care.",
+          "description": "An extra set of hands for the day: light tidying, laundry, meal prep, errands, and play with older children while you handle the baby or take a break. Mother's helpers do not provide unsupervised child care.",
           "imageRef": "/brand-assets/ptc-child-care.png",
-          "bookingNotes": "Booked in 3-hour blocks. Most families schedule weekly or as-needed sessions.",
+          "bookingNotes": "Sessions are scheduled around your needs, with no minimum commitment. Reach out and we'll find a helper who fits your family's pace.",
           "active": true
         },
         {
           "id": "tutoring",
           "name": "Tutoring",
           "tagline": "One-on-one academic support from vetted tutors",
-          "description": "Reading, math, writing, study skills, and test prep — delivered in your home by background-checked tutors matched to your child's grade level and subject. Same vetting standard as our nanny roster.",
+          "description": "Reading, math, writing, study skills, and test prep, all delivered in your home by background-checked tutors matched to your child's grade level and subject. Same vetting standard as our nanny roster.",
           "imageRef": "/brand-assets/ptc-child-care.png",
           "bookingNotes": "Typical sessions are 1–2 hours, weekly or as-needed. Subject and grade-level match confirmed before the first session.",
           "active": true
@@ -82,7 +82,7 @@
           "tagline": "Walks, feeds, and check-ins while you're away",
           "description": "Scheduled visits to your home: walks, feeding, fresh water, medication, litter, and a photo update each visit. Perfect for day trips or work travel.",
           "imageRef": "/brand-assets/ptc-child-care.png",
-          "bookingNotes": "Minimum 30-minute visits. Most clients book 1–3 visits per day for longer trips.",
+          "bookingNotes": "Minimum 30-minute visits.",
           "active": true
         },
         {
@@ -91,7 +91,7 @@
           "tagline": "A trusted sitter stays with your pet while you're away",
           "description": "Your pet stays home, sticking to their normal routine, with one of our vetted sitters staying overnight. Includes morning and evening walks/feeds, fresh water, medication, and daily photo updates.",
           "imageRef": "/brand-assets/ptc-child-care.png",
-          "bookingNotes": "Minimum 2-night booking. Book 1+ week in advance when possible.",
+          "bookingNotes": "Minimum 2-night booking. Book 1+ week in advance when possible. House sitting services such as getting mail, watering plants, etc, can be added for an additional fee.",
           "active": true
         }
       ]

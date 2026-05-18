@@ -16,7 +16,7 @@ import { MetaService } from '../../core/meta.service';
 import { ServiceCategory } from '../../core/models/service';
 import { Testimonial } from '../../core/models/testimonial';
 
-const CAROUSEL_INTERVAL_MS = 5000;
+const CAROUSEL_INTERVAL_MS = 10000;
 const CAROUSEL_THRESHOLD = 1; // > this many featured testimonials → switch to carousel (so 2+)
 
 @Component({
