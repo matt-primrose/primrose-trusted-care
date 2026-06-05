@@ -348,16 +348,27 @@ The site deploys to **GoDaddy PaaS**, accessed at `host.beta.godaddy.com/paas` (
 
 Authoritative app requirements: <https://host.beta.godaddy.com/paas/app-requirements>.
 
+### ⚠️ The platform CANNOT build this app — we ship a prebuilt bundle (changed 2026-06-05)
+
+GoDaddy PaaS's build sandbox **cannot execute installed `node_modules` binaries**. Any on-platform `npm run build` (i.e. `ng build`) dies because Angular's bundler (esbuild) fails with `spawnSync .../@esbuild/linux-x64/bin/esbuild EACCES`. The sandbox logs `airo-sandbox: ... skipping path=/app/node_modules mode=rx` — it never applies the execute mount to `node_modules`. This started ~2026-06-03 after ~16 days of working deploys, with no app changes — i.e. it's a platform-side regression (a support ticket is open). Installing the build toolchain into `dependencies` only swaps `ng: not found` for the esbuild `EACCES`; there is no on-platform fix.
+
+**So the site is built off-platform and the build output is committed and deployed:**
+- **`client/dist/` is committed to git** (un-ignored in both `.gitignore` and `client/.gitignore`). It is the deploy artifact. `app.js` boots `client/dist/client/server/server.mjs`.
+- The root **`build` script runs [`scripts/build.mjs`](scripts/build.mjs)**, which runs the real `ng build` locally (where `@angular/cli` is installed) but **no-ops on the platform** (where it isn't), so the platform's `npm run build` / `prestart` succeed without needing the toolchain.
+- The Angular build toolchain (`@angular/build`, `@angular/cli`, `@angular/compiler-cli`, `typescript`) lives in **devDependencies**. With `NODE_ENV=production` the platform install (`--omit=dev`) pulls **zero packages with install scripts**, so there is nothing for the sandbox to execute → no `EACCES`. Do **not** move these to `dependencies`.
+
+**Deploy flow:** edit code/content → `npm run build` (repo root) → **commit the changed `client/dist/`** → push. GoDaddy installs runtime deps only and runs `node app.js` against the prebuilt bundle. Revisit this whole section if/when GoDaddy fixes the sandbox; then we can drop the committed `client/dist` and let the platform build again.
+
+> **Start command note:** the platform's run command was observed to be `npm run dev`, not `npm start`. As a workaround the root `dev` script is aliased to `npm run start` (and the real dev command is `dev-local`). If you can set the platform's start command to `npm start` in the dashboard, restore `dev` to the `concurrently` command and drop the alias.
+
 ### What our `package.json` must declare (already in place at the repo root)
 - `"main": "app.js"` — entry point.
-- `"build": "..."` — runs once on the platform during deploy (`npm run build` builds the Angular SSR bundle into `client/dist/`).
+- `"build": "node scripts/build.mjs"` — builds locally, no-ops on the platform (see above).
 - `"start": "node app.js"` — long-running command the platform invokes.
 
 ### How code reaches PaaS (two options)
-- **Zip upload** (≤ 100 MB) via the PaaS dashboard. Exclude `node_modules/` and `**/dist/` from the zip — PaaS will install deps and run the build. Our `.gitignore` already excludes these from version control.
-- **GitHub integration** — connect a repo and trigger pull-and-deploy from the dashboard. Preferable once set up: one-click deploys, clear audit trail.
-
-For a small marketing site that changes infrequently, either works. Pick GitHub when the repo lives somewhere we control.
+- **GitHub integration** (current method) — connect the repo; push to `main` triggers a deploy. One-click, clear audit trail. Because `client/dist/` is committed, the push carries the prebuilt bundle.
+- **Zip upload** (≤ 100 MB) via the PaaS dashboard. Include `client/dist/` (the prebuilt bundle); exclude `node_modules/`. Note `client/dist` is ~33 MB, so mind the 100 MB limit.
 
 ### Environment variables
 Set these in the PaaS dashboard. **Never commit them.** Same shape as `.env.example` at the repo root:
@@ -409,7 +420,7 @@ Before every change, satisfy this checklist:
 8. **SSE channel is for confirmation events only in v1.** Don't reuse it for unrelated flows without architectural review.
 9. **Don't write to server disk for user data.** Uploads stream straight into the outbound email.
 10. **If brand assets are missing,** leave placeholders (`TBD-PALETTE`, `TBD-LOGO`) — do not invent colors, typography, or imagery.
-11. **Rebuild after every code change before asking the owner to verify in the browser.** The owner runs the site from the built bundle (`npm start` against `client/dist/`), not from `ng serve` with HMR. After editing SCSS, TypeScript, HTML, or content files, run `npm run build` from the repo root and only then declare a UI/visual change done. Don't trust "the dev server should hot-reload" reasoning — it doesn't apply here.
+11. **Rebuild AND commit `client/dist` after every code change before asking the owner to verify or deploy.** The owner runs the site from the built bundle (`npm start` against `client/dist/`), not from `ng serve` with HMR. After editing SCSS, TypeScript, HTML, or content files, run `npm run build` from the repo root and only then declare a UI/visual change done. Don't trust "the dev server should hot-reload" reasoning — it doesn't apply here. **And because GoDaddy can't build (see §9), `client/dist/` is the committed deploy artifact — a code change that isn't followed by a rebuilt, committed `client/dist/` will NOT reach production.**
 
 ---
 
