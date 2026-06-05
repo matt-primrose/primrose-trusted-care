@@ -5,7 +5,7 @@ export default {
   "localhost",
   "127.0.0.1",
   "::1",
-  "*.c24.airoapp.ai",
+  "*.airoapp.ai",
   "primrosetrustedcare.com",
   "*.primrosetrustedcare.com"
 ],

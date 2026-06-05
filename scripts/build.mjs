@@ -15,16 +15,20 @@ import { spawnSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
 
-let hasAngularCli = true;
+// Check for @angular/build specifically (the builder that provides
+// @angular/build:application). On GoDaddy it's an optionalDependency whose
+// install fails (esbuild EACCES), so it gets skipped while @angular/cli may
+// survive — checking @angular/cli would wrongly let `ng build` run and fail.
+let hasBuilder = true;
 try {
-  require.resolve('@angular/cli/package.json');
+  require.resolve('@angular/build/package.json');
 } catch {
-  hasAngularCli = false;
+  hasBuilder = false;
 }
 
-if (!hasAngularCli) {
+if (!hasBuilder) {
   console.log(
-    '[build] @angular/cli not installed (production install) — skipping build; serving prebuilt client/dist.',
+    '[build] @angular/build not installed (platform install) — skipping build; serving prebuilt client/dist.',
   );
   process.exit(0);
 }
