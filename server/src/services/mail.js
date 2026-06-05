@@ -1,4 +1,3 @@
-import { Resend } from 'resend';
 import { logger } from '../logger.js';
 
 /**
@@ -9,7 +8,11 @@ import { logger } from '../logger.js';
  *
  * Active provider is selected by process.env.MAIL_PROVIDER:
  *   - 'console' (default) — logs the email instead of sending. Safe for dev.
- *   - 'resend' — live, uses the Resend Node SDK. Requires MAIL_API_KEY in env.
+ *   - 'resend' — live, calls the Resend REST API directly via fetch (Node 22
+ *     global fetch). Requires MAIL_API_KEY in env. We intentionally do NOT use
+ *     the `resend` npm SDK: it pulls in @react-email/render → react-dom, which
+ *     the Angular SSR bundle leaves external and which GoDaddy PaaS fails to
+ *     resolve at runtime. The REST API keeps the dependency surface tiny.
  *   - 'postmark' — stub; not implemented in v1.
  */
 
@@ -52,7 +55,7 @@ function createResendMailService(env) {
   if (!env.MAIL_API_KEY) {
     throw new Error('MAIL_PROVIDER=resend requires MAIL_API_KEY');
   }
-  const resend = new Resend(env.MAIL_API_KEY);
+  const endpoint = 'https://api.resend.com/emails';
 
   return {
     name: 'resend',
@@ -63,24 +66,32 @@ function createResendMailService(env) {
         subject: message.subject,
         text: message.text,
       };
-      if (message.replyTo) payload.replyTo = message.replyTo;
+      if (message.replyTo) payload.reply_to = message.replyTo;
       if (message.html) payload.html = message.html;
       if (message.attachments?.length) {
         payload.attachments = message.attachments.map((a) => ({
           filename: a.filename,
-          content: a.content,
-          contentType: a.contentType,
+          content: Buffer.isBuffer(a.content) ? a.content.toString('base64') : a.content,
+          content_type: a.contentType,
         }));
       }
 
-      // Resend SDK returns { data, error } instead of throwing — explicit check below.
-      const { data, error } = await resend.emails.send(payload);
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${env.MAIL_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-      if (error) {
-        logger.error({ err: error }, 'resend send failed');
-        throw new Error(error.message ?? 'Resend send failed');
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        logger.error({ status: res.status, detail }, 'resend send failed');
+        throw new Error(`Resend send failed: ${res.status}`);
       }
 
+      const data = await res.json().catch(() => ({}));
       logger.info({ resend: { id: data?.id } }, 'resend send ok');
     },
   };

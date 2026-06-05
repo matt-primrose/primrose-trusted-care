@@ -49,8 +49,7 @@
             },
             "ssr": {
               "entry": "src/server.ts"
-            },
-            "externalDependencies": ["react", "react-dom"]
+            }
           },
           "configurations": {
             "production": {
