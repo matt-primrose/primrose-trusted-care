@@ -1,7 +1,9 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
-/dist
+# NOTE: /dist is intentionally committed as a prebuilt deploy artifact for
+# GoDaddy PaaS (which cannot build the bundle). See ../scripts/build.mjs.
+# /dist
 /tmp
 /out-tsc
 /bazel-out

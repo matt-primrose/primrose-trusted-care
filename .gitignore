@@ -2,7 +2,11 @@
 node_modules/
 
 # Build output
-**/dist/
+# NOTE: client/dist is intentionally committed as a prebuilt deploy artifact.
+# GoDaddy PaaS cannot build the Angular bundle (its sandbox can't execute
+# esbuild), so the site is built locally and the output is deployed as-is.
+# See scripts/build.mjs and CLAUDE.md §9.
+server/dist/
 **/.angular/
 
 # Environment

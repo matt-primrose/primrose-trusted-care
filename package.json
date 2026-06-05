@@ -17,7 +17,7 @@
     "dev-local": "concurrently -n server,client -c blue,magenta \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "node --env-file-if-exists=.env --watch server/src/standalone.js",
     "dev:client": "npm run -w client start",
-    "build": "npm run -w client build",
+    "build": "node scripts/build.mjs",
     "prestart": "npm run build",
     "dev": "npm run start",
     "start": "node app.js",

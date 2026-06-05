@@ -1,0 +1,62 @@
+{
+  "version": "0.1.0-draft",
+  "_note": "Hex values are eyedropper-approximated from brand-assets/ptc-color-palette.jpeg (the color reference image) and the logo files. Verify against the source design / Adobe / Figma file before launch — these are starting points, not authoritative.",
+  "tokens": {
+    "color": {
+      "brand": {
+        "blush":    "#F8DCE5",
+        "rose":     "#EBA3C2",
+        "pink":     "#E84D8E",
+        "crimson":  "#D33041",
+        "rosewood": "#8E5A5A",
+        "logoBg":   "#E5B8B8"
+      },
+      "ui": {
+        "background":   "{color.brand.blush}",
+        "surface":      "#FFFFFF",
+        "text":         "#2A1F22",
+        "textMuted":    "{color.brand.rosewood}",
+        "primary":      "{color.brand.crimson}",
+        "primaryHover": "#B62736",
+        "accent":       "{color.brand.pink}",
+        "border":       "#E8C8D0",
+        "focusRing":    "{color.brand.pink}"
+      }
+    }
+  },
+  "typography": {
+    "_status": "Working defaults, approximated from ptc-font-example.JPG. Free Google Fonts equivalents — swap to commercial originals (Trajan / Avenir / etc.) later if licensing allows.",
+    "display": {
+      "family": "Cinzel",
+      "source": "Google Fonts",
+      "weights": [400, 600, 700],
+      "fallbacks": ["Cormorant Garamond", "Playfair Display", "Georgia", "serif"],
+      "rationale": "Trajan-style Roman capitals matching the logo wordmark. Use for the logo lockup and page H1s only — too formal for body."
+    },
+    "body": {
+      "family": "Lato",
+      "source": "Google Fonts",
+      "weights": [400, 600, 700],
+      "fallbacks": ["Source Sans 3", "Mulish", "Helvetica Neue", "Arial", "sans-serif"],
+      "rationale": "Warm humanist sans used on the business card body copy. Default for all UI text, headings (H2+), and forms."
+    },
+    "scriptAccent": {
+      "family": "Allura",
+      "source": "Google Fonts",
+      "weights": [400],
+      "fallbacks": ["Great Vibes", "Pinyon Script", "cursive"],
+      "rationale": "Connected formal script seen on 'Sara Primrose' on the business card. RESTRICTED USE — personal-name treatments, signatures, decorative pull-quotes. Never body copy, buttons, navigation, or anything that needs to be readable at <24px."
+    }
+  },
+  "logo": {
+    "monogram": {
+      "file": "ptc-christ.png",
+      "description": "PtC monogram with cross-shaped 't'. Used in the site header and footer as a small brand mark, and in formal/print contexts (business cards, letterhead, signatures). The brand's identity mark."
+    },
+    "illustrated": {
+      "file": "ptc-child-care.png",
+      "transparentFile": "ptc-child-care-transparent.png",
+      "description": "Illustrated mark (baby with pacifier). Used in the hero, as the favicon, on social cards, and in marketing collateral. Use the transparent variant when overlaying a colored or gradient background."
+    }
+  }
+}
