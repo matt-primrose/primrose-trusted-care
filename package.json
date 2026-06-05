@@ -14,11 +14,12 @@
     "client"
   ],
   "scripts": {
-    "dev": "concurrently -n server,client -c blue,magenta \"npm:dev:server\" \"npm:dev:client\"",
+    "dev-local": "concurrently -n server,client -c blue,magenta \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "node --env-file-if-exists=.env --watch server/src/standalone.js",
     "dev:client": "npm run -w client start",
     "build": "npm run -w client build",
     "prestart": "npm run build",
+    "dev": "npm run start",
     "start": "node app.js",
     "lint": "eslint . && npm run -w client lint",
     "test": "npm run -w server test && npm run -w client test -- --watch=false",
