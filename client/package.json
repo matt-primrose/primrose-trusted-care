@@ -24,7 +24,8 @@
     "rxjs": "~7.8.0",
     "tslib": "2.3.0"
   },
-  "devDependencies": {
+  "comment_optionalDependencies": "Build/test toolchain is intentionally in optionalDependencies, not devDependencies. GoDaddy PaaS forces a full install and its sandbox cannot execute esbuild's binary (postinstall EACCES). As optional deps, that failure is non-fatal — npm skips the failed package and the install completes. The site is prebuilt locally (see scripts/build.mjs + committed client/dist), so the platform never needs these. Locally they install normally, so builds are unaffected.",
+  "optionalDependencies": {
     "@angular/build": "21.2.11",
     "@angular/cli": "21.2.11",
     "@angular/compiler-cli": "21.2.0",
