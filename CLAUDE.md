@@ -354,10 +354,15 @@ GoDaddy PaaS's build sandbox **cannot execute installed `node_modules` binaries*
 
 **So the site is built off-platform and the build output is committed and deployed:**
 - **`client/dist/` is committed to git** (un-ignored in both `.gitignore` and `client/.gitignore`). It is the deploy artifact. `app.js` boots `client/dist/client/server/server.mjs`.
-- The root **`build` script runs [`scripts/build.mjs`](scripts/build.mjs)**, which runs the real `ng build` locally (where `@angular/cli` is installed) but **no-ops on the platform** (where it isn't), so the platform's `npm run build` / `prestart` succeed without needing the toolchain.
-- The Angular build toolchain (`@angular/build`, `@angular/cli`, `@angular/compiler-cli`, `typescript`) lives in **devDependencies**. With `NODE_ENV=production` the platform install (`--omit=dev`) pulls **zero packages with install scripts**, so there is nothing for the sandbox to execute → no `EACCES`. Do **not** move these to `dependencies`.
+- The root **`build` script runs [`scripts/build.mjs`](scripts/build.mjs)**, which runs the real `ng build` locally but **no-ops on the platform** by skipping when **`@angular/build`** can't be resolved. (It checks `@angular/build` — the builder — NOT `@angular/cli`: when esbuild fails, the builder is dropped while the CLI can survive, and a present CLI would wrongly let `ng build` run and fail with "Could not find @angular/build:application builder".)
+- The Angular/Vitest build toolchain (`@angular/build`, `@angular/cli`, `@angular/compiler-cli`, `typescript`, `vitest`, `jsdom`) lives in **`optionalDependencies`** (see `client/package.json`). GoDaddy forces a full install — `NODE_ENV` is a reserved secret we can't set, and `NPM_CONFIG_OMIT=dev` was ignored — so esbuild **will** be installed and its postinstall **will** hit `EACCES`. As *optional* deps, that failure is **non-fatal**: npm warns, skips the failed package(s), and the install completes (same mechanism as `fsevents` on Linux). Do **not** move these to `dependencies` or `devDependencies`.
+- **Email uses the Resend REST API via `fetch`, not the `resend` SDK** — the SDK pulls in `@react-email/render` → `react-dom`, which the SSR bundle externalizes and the platform couldn't resolve at runtime (`ERR_MODULE_NOT_FOUND`). See [`server/src/services/mail.js`](server/src/services/mail.js).
 
-**Deploy flow:** edit code/content → `npm run build` (repo root) → **commit the changed `client/dist/`** → push. GoDaddy installs runtime deps only and runs `node app.js` against the prebuilt bundle. Revisit this whole section if/when GoDaddy fixes the sandbox; then we can drop the committed `client/dist` and let the platform build again.
+**Deploy flow:** edit code/content → `npm run build` (repo root) → **commit the changed `client/dist/`** → push. GoDaddy installs deps (esbuild fails harmlessly), the build skips, and `node app.js` serves the prebuilt bundle. Revisit this whole section if/when GoDaddy fixes the sandbox; then we can drop the committed `client/dist`, move the toolchain back to `devDependencies`, and let the platform build again.
+
+**Required env vars beyond the mail ones (set in the PaaS dashboard):**
+- `NG_TRUST_PROXY_HEADERS=true` — GoDaddy proxies requests; without this Angular SSR warns on `x-forwarded-for` and can't see the real client IP / host.
+- Angular SSR validates the request host against `security.allowedHosts` in [`client/angular.json`](client/angular.json) (returns 400 otherwise). It includes `*.airoapp.ai` (GoDaddy preview URLs — the subdomain's `cNN` number changes between app recreations) plus the production domain. Changing it requires a rebuild + committed `client/dist`.
 
 > **Start command note:** the platform's run command was observed to be `npm run dev`, not `npm start`. As a workaround the root `dev` script is aliased to `npm run start` (and the real dev command is `dev-local`). If you can set the platform's start command to `npm start` in the dashboard, restore `dev` to the `concurrently` command and drop the alias.
 
@@ -372,14 +377,14 @@ GoDaddy PaaS's build sandbox **cannot execute installed `node_modules` binaries*
 
 ### Environment variables
 Set these in the PaaS dashboard. **Never commit them.** Same shape as `.env.example` at the repo root:
-- `NODE_ENV=production`
+- `NG_TRUST_PROXY_HEADERS=true` — **required**; GoDaddy proxies requests (see §9 prebuilt-bundle notes).
 - `MAIL_PROVIDER=resend` (or `postmark`)
 - `MAIL_API_KEY=...`
 - `MAIL_FROM=...` — verified sender address
 - `MAIL_TO=...` — where submissions land
 - `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX` (optional overrides)
 
-`PORT` is set automatically by PaaS; our app already reads `process.env.PORT`.
+`NODE_ENV` is a **reserved secret on GoDaddy PaaS** — you can't set or view it (assume `production` at runtime). Don't rely on it to control the install; that's why the build toolchain is in `optionalDependencies` (see §9). `PORT` is set automatically by PaaS; our app already reads `process.env.PORT`. **All env vars are wiped if the app is deleted and recreated** — re-add them after any recreate.
 
 ### Network constraints
 PaaS apps can make **outbound connections only on ports 80 and 443**, plus GoDaddy-managed databases. Resend (`api.resend.com`) and Postmark both serve on 443, so we're fine. If we ever add a new external integration, verify it's HTTPS before assuming it'll work.
