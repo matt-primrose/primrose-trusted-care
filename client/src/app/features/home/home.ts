@@ -13,7 +13,11 @@ import { Section } from '../../shared/section/section';
 import { Card } from '../../shared/card/card';
 import { ContentService } from '../../core/content.service';
 import { MetaService } from '../../core/meta.service';
-import { ServiceCategory } from '../../core/models/service';
+import {
+  ComingSoonItem,
+  ServiceCategory,
+  ServicesContent,
+} from '../../core/models/service';
 import {
   CarouselImage,
   CarouselSlide,
@@ -36,6 +40,7 @@ export class Home implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   protected readonly categories = signal<ServiceCategory[]>([]);
+  protected readonly comingSoon = signal<ComingSoonItem[]>([]);
   protected readonly testimonialList = signal<Testimonial[]>([]);
   protected readonly carouselImages = signal<CarouselImage[]>([]);
 
@@ -77,12 +82,15 @@ export class Home implements OnInit {
     });
 
     const [services, testimonials] = await Promise.all([
-      this.content.loadServices().catch(() => ({ categories: [] })),
+      this.content
+        .loadServices()
+        .catch((): ServicesContent => ({ categories: [] })),
       this.content
         .loadTestimonials()
         .catch(() => ({ testimonials: [], images: [] })),
     ]);
     this.categories.set(services.categories);
+    this.comingSoon.set(services.comingSoon ?? []);
     this.testimonialList.set(testimonials.testimonials);
     this.carouselImages.set(testimonials.images ?? []);
   }

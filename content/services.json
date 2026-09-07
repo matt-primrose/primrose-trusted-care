@@ -96,5 +96,11 @@
         }
       ]
     }
+  ],
+  "comingSoon": [
+    {
+      "id": "safe-ride",
+      "name": "Primrose Trusted Safe Ride"
+    }
   ]
 }

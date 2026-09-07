@@ -114,6 +114,16 @@
   <p class="centered">
     <a routerLink="/services" class="btn primary">See all services</a>
   </p>
+  @if (comingSoon().length > 0) {
+    <div class="coming-soon-banner">
+      <p class="coming-soon-label">Coming Soon</p>
+      <p class="coming-soon-names">
+        @for (item of comingSoon(); track item.id) {
+          <span class="coming-soon-name">{{ item.name }}</span>
+        }
+      </p>
+    </div>
+  }
 </app-section>
 
 <app-section heading="Become a Primrose Trusted Care Provider">

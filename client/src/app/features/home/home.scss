@@ -237,3 +237,32 @@
     justify-content: center;
   }
 }
+
+.coming-soon-banner {
+  margin: 2rem auto 0;
+  max-width: 640px;
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  background: var(--color-ui-surface, #fff);
+  border: 2px dashed var(--color-brand-rose, #eba3c2);
+  border-radius: var(--radius-lg, 12px);
+
+  p { margin: 0; }
+
+  .coming-soon-label {
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-crimson, #d33041);
+  }
+
+  .coming-soon-name {
+    display: block;
+    font-family: var(--font-display, 'Cinzel', serif);
+    font-size: clamp(1.25rem, 4vw, 1.6rem);
+    line-height: 1.3;
+    color: var(--color-brand-rosewood, #8e5a5a);
+  }
+}
