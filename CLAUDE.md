@@ -354,14 +354,22 @@ GoDaddy PaaS's build sandbox **cannot execute installed `node_modules` binaries*
 
 **So the site is built off-platform and the build output is committed and deployed:**
 - **`client/dist/` is committed to git** (un-ignored in both `.gitignore` and `client/.gitignore`). It is the deploy artifact. `app.js` boots `client/dist/client/server/server.mjs`.
-- The root **`build` script runs [`scripts/build.mjs`](scripts/build.mjs)**, which runs the real `ng build` locally but **no-ops on the platform** by skipping when **`@angular/build`** can't be resolved. (It checks `@angular/build` — the builder — NOT `@angular/cli`: when esbuild fails, the builder is dropped while the CLI can survive, and a present CLI would wrongly let `ng build` run and fail with "Could not find @angular/build:application builder".)
+- The root **`build` script runs [`scripts/build.mjs`](scripts/build.mjs)**, which runs the real `ng build` locally but **must never build on the platform**. Two guards, because the toolchain is an optionalDependency and whether it survives install varies per deploy:
+  1. **`PTC_SKIP_BUILD=1`** (optional, set in the PaaS dashboard) skips unconditionally.
+  2. **Platform detection** — skips when running on Linux out of `/app`, which is where PaaS runs the app and where a developer machine never is. This is what makes a clean deploy need no dashboard setting; env vars are wiped on app recreate, so guard 1 alone would regress.
+  3. Fallback: skip when **`@angular/build`** can't be resolved. (It checks `@angular/build` — the builder — NOT `@angular/cli`: when esbuild fails, the builder is dropped while the CLI can survive, and a present CLI would wrongly let `ng build` run and fail with "Could not find @angular/build:application builder".)
+- **There is no `prestart` script** — `npm start` must go straight to `node app.js`. It used to run `npm run build`, which is how the 2026-09-07 deploy crash happened (below). Build locally with `npm run build`; never as a side effect of start.
+- **A second reason the platform can't build** (found 2026-09-07): even when the toolchain installs fine, `ng build` for an SSR app extracts server routes by booting a dev server, which binds `localhost`. The sandbox denies it and the deploy dies with `uncaughtException Error: listen EACCES: permission denied 127.0.0.1` (the stack shows a DNS lookup before `listen`, which is the tell — nothing in our production path resolves a hostname). The next deploy attempt happened to install without `@angular/build`, hit the fallback guard, and came up fine, so the failure is intermittent by nature.
 - The Angular/Vitest build toolchain (`@angular/build`, `@angular/cli`, `@angular/compiler-cli`, `typescript`, `vitest`, `jsdom`) lives in **`optionalDependencies`** (see `client/package.json`). GoDaddy forces a full install — `NODE_ENV` is a reserved secret we can't set, and `NPM_CONFIG_OMIT=dev` was ignored — so esbuild **will** be installed and its postinstall **will** hit `EACCES`. As *optional* deps, that failure is **non-fatal**: npm warns, skips the failed package(s), and the install completes (same mechanism as `fsevents` on Linux). Do **not** move these to `dependencies` or `devDependencies`.
 - **Email uses the Resend REST API via `fetch`, not the `resend` SDK** — the SDK pulls in `@react-email/render` → `react-dom`, which the SSR bundle externalizes and the platform couldn't resolve at runtime (`ERR_MODULE_NOT_FOUND`). See [`server/src/services/mail.js`](server/src/services/mail.js).
 
 **Deploy flow:** edit code/content → `npm run build` (repo root) → **commit the changed `client/dist/`** → push. GoDaddy installs deps (esbuild fails harmlessly), the build skips, and `node app.js` serves the prebuilt bundle. Revisit this whole section if/when GoDaddy fixes the sandbox; then we can drop the committed `client/dist`, move the toolchain back to `devDependencies`, and let the platform build again.
 
 **Required env vars beyond the mail ones (set in the PaaS dashboard):**
-- `NG_TRUST_PROXY_HEADERS=true` — GoDaddy proxies requests; without this Angular SSR warns on `x-forwarded-for` and can't see the real client IP / host.
+- `NG_TRUST_PROXY_HEADERS=true` — **now optional.** [`client/src/server.ts`](client/src/server.ts) constructs `AngularNodeAppEngine({ trustProxyHeaders: true })`, so this is correct by default; the env var still overrides if set.
+
+  **Why it matters (found 2026-09-07):** GoDaddy sends `x-forwarded-for` on every request. Angular trusts only `x-forwarded-host` and `x-forwarded-proto` by default, and on seeing any other `x-forwarded-*` header it warns, sets `deoptToCSR`, and calls `serveClientSidePage()` — **SSR silently switches off and the browser gets an empty client-side shell.** Verified locally: `curl -H "x-forwarded-for: ..."` against the built bundle returned markup with the rendered page content missing. Bad for a marketing site's SEO and first paint, and it produced no error, only a warning.
+- `PTC_SKIP_BUILD=1` — optional; keeps the platform from ever running `ng build`. The `/app` detection above already covers this.
 - Angular SSR validates the request host against `security.allowedHosts` in [`client/angular.json`](client/angular.json) (returns 400 otherwise). It includes `*.airoapp.ai` (GoDaddy preview URLs — the subdomain's `cNN` number changes between app recreations) plus the production domain. Changing it requires a rebuild + committed `client/dist`.
 
 > **Start command note:** the platform's run command was observed to be `npm run dev`, not `npm start`. As a workaround the root `dev` script is aliased to `npm run start` (and the real dev command is `dev-local`). If you can set the platform's start command to `npm start` in the dashboard, restore `dev` to the `concurrently` command and drop the alias.
@@ -369,6 +377,7 @@ GoDaddy PaaS's build sandbox **cannot execute installed `node_modules` binaries*
 ### What our `package.json` must declare (already in place at the repo root)
 - `"main": "app.js"` — entry point.
 - `"build": "node scripts/build.mjs"` — builds locally, no-ops on the platform (see above).
+- **No `prestart`.** `npm start` must not build; the deploy artifact is the committed `client/dist`.
 - `"start": "node app.js"` — long-running command the platform invokes.
 
 ### How code reaches PaaS (two options)
@@ -377,11 +386,12 @@ GoDaddy PaaS's build sandbox **cannot execute installed `node_modules` binaries*
 
 ### Environment variables
 Set these in the PaaS dashboard. **Never commit them.** Same shape as `.env.example` at the repo root:
-- `NG_TRUST_PROXY_HEADERS=true` — **required**; GoDaddy proxies requests (see §9 prebuilt-bundle notes).
+- `NG_TRUST_PROXY_HEADERS=true` — optional; the code sets `trustProxyHeaders: true` already (see §9).
 - `MAIL_PROVIDER=resend` (or `postmark`)
 - `MAIL_API_KEY=...`
 - `MAIL_FROM=...` — verified sender address
 - `MAIL_TO=...` — where submissions land
+- `PTC_SKIP_BUILD=1` — optional; belt-and-braces against the platform attempting `ng build` (see §9 prebuilt-bundle notes).
 - `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX` (optional overrides)
 
 `NODE_ENV` is a **reserved secret on GoDaddy PaaS** — you can't set or view it (assume `production` at runtime). Don't rely on it to control the install; that's why the build toolchain is in `optionalDependencies` (see §9). `PORT` is set automatically by PaaS; our app already reads `process.env.PORT`. **All env vars are wiped if the app is deleted and recreated** — re-add them after any recreate.

@@ -1,24 +1,48 @@
-// Root build entry. Builds the Angular SSR bundle locally, but no-ops on hosts
-// that don't install the build toolchain.
+// Root build entry. Builds the Angular SSR bundle locally, and must never build
+// on GoDaddy PaaS — the site is built off-platform and the prebuilt client/dist
+// is committed and served as-is (see CLAUDE.md §9).
 //
-// Why: GoDaddy PaaS installs with devDependencies omitted (NODE_ENV=production)
-// and its build sandbox cannot execute installed binaries (esbuild fails with
-// EACCES). So the site is built off-platform and the prebuilt client/dist is
-// committed and deployed. On the platform `@angular/cli` is absent, so this
-// script skips the build and the committed client/dist is served as-is.
+// Two independent reasons `ng build` cannot run on the platform:
+//   1. esbuild can't execute from node_modules there (EACCES), so the bundle fails.
+//   2. Even when the toolchain does install, `ng build` for an SSR app extracts
+//      server routes by booting a dev server, which binds localhost — and the
+//      sandbox denies that: "listen EACCES: permission denied 127.0.0.1". This
+//      killed a deploy on 2026-09-07.
 //
-// Locally (devDependencies installed) it runs the real `ng build`, so the
-// normal "rebuild after every change" workflow is unchanged.
+// Two guards, because the toolchain's presence is not reliable: the Angular deps
+// are optionalDependencies, so whether they survive install varies per deploy
+// (that's how #2 got a chance to run at all).
 
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
 
-// Check for @angular/build specifically (the builder that provides
-// @angular/build:application). On GoDaddy it's an optionalDependency whose
-// install fails (esbuild EACCES), so it gets skipped while @angular/cli may
-// survive — checking @angular/cli would wrongly let `ng build` run and fail.
+// Guard 1: explicit opt-out. PTC_SKIP_BUILD=1 can be set in the PaaS dashboard.
+if (process.env.PTC_SKIP_BUILD === '1') {
+  console.log(
+    '[build] PTC_SKIP_BUILD=1 — skipping build; serving prebuilt client/dist.',
+  );
+  process.exit(0);
+}
+
+// Guard 2: recognise the platform itself, so a clean deploy needs no dashboard
+// setting. GoDaddy PaaS runs the app out of /app on Linux; a developer machine
+// never does. Env vars are wiped whenever the app is recreated, so relying on
+// guard 1 alone would make deploys fail again after a recreate.
+const onPaas = process.platform === 'linux' && process.cwd().startsWith('/app');
+if (onPaas) {
+  console.log(
+    '[build] running on GoDaddy PaaS (/app) — skipping build; serving prebuilt client/dist.',
+  );
+  process.exit(0);
+}
+
+// Guard 3: last line of defence if the platform ever moves off /app. Checks
+// @angular/build (the builder providing @angular/build:application), not
+// @angular/cli — when esbuild fails the builder is dropped while the CLI can
+// survive, and a present CLI would wrongly let `ng build` run and fail on a
+// missing builder.
 let hasBuilder = true;
 try {
   require.resolve('@angular/build/package.json');

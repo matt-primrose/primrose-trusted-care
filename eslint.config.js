@@ -4,7 +4,9 @@ import globals from 'globals';
 export default [
   js.configs.recommended,
   {
-    files: ['**/*.js'],
+    // .mjs too: scripts/ uses that extension and otherwise gets linted without
+    // Node globals, so every process/console reference reports as no-undef.
+    files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',

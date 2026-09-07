@@ -18,7 +18,6 @@
     "dev:server": "node --env-file-if-exists=.env --watch server/src/standalone.js",
     "dev:client": "npm run -w client start",
     "build": "node scripts/build.mjs",
-    "prestart": "npm run build",
     "dev": "npm run start",
     "start": "node app.js",
     "lint": "eslint . && npm run -w client lint",

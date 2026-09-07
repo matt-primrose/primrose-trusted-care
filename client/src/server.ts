@@ -37,7 +37,18 @@ app.use(
 );
 
 // Angular SSR catch-all — renders any non-API, non-static route.
-const angularApp = new AngularNodeAppEngine();
+//
+// trustProxyHeaders is not optional for us: GoDaddy fronts the app with a proxy that
+// sends x-forwarded-for on every request. Angular only trusts x-forwarded-host and
+// x-forwarded-proto by default, and when it sees any other x-forwarded-* header it
+// warns, sets deoptToCSR, and serves the client-side shell instead of rendering —
+// i.e. SSR silently switches off in production. Verified 2026-09-07: with the header
+// present the response lost its server-rendered markup entirely.
+//
+// NG_TRUST_PROXY_HEADERS in the environment still takes precedence over this; setting
+// it here means a deploy renders correctly even if that env var is missing (they get
+// wiped whenever the PaaS app is recreated).
+const angularApp = new AngularNodeAppEngine({ trustProxyHeaders: true });
 app.use((req, res, next) => {
   angularApp
     .handle(req)
