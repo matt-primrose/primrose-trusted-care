@@ -62,7 +62,7 @@
           "id": "mothers-helper",
           "name": "Mother's Helper",
           "tagline": "Household help while you're home with the kids",
-          "description": "An extra set of hands for the day: light tidying, laundry, meal prep, errands, and play with older children while you handle the baby or take a break. Mother's helpers do not provide unsupervised child care.",
+          "description": "An extra set of hands for the day: light tidying, laundry, meal prep, errands, and play with older children while you handle the baby or take a break. Mother's helpers do not provide unsupervised child care. Many of our Mother's Helpers perform their tasks while children are at school.",
           "imageRef": "/brand-assets/ptc-child-care.png",
           "bookingNotes": "Sessions are scheduled around your needs, with no minimum commitment. Reach out and we'll find a helper who fits your family's pace.",
           "active": true
@@ -103,12 +103,8 @@
       "name": "Primrose Trusted Safe Ride",
       "images": [
         {
-          "src": "/brand-assets/ptc-safe-ride-side.png",
-          "alt": "The Primrose Trusted Safe Ride van, side view, with children buckled in and a driver at the wheel"
-        },
-        {
-          "src": "/brand-assets/ptc-safe-ride-back.png",
-          "alt": "The back of the Primrose Trusted Safe Ride van, with children waving from the rear window"
+          "src": "/brand-assets/ptc-safe-ride-back.jpg",
+          "alt": "The Primrose Trusted Safe Ride van parked on a neighborhood street, rear view, lettered with the Primrose Trusted Safe Ride name and phone number, with children waving from the back window"
         }
       ]
     }

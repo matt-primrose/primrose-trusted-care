@@ -240,47 +240,72 @@
 
 .coming-soon-banner {
   margin: 2rem auto 0;
-  max-width: 760px;
-  padding: 0.85rem 1rem;
+  max-width: 624px;
+  padding: 1.25rem 1.25rem 1rem;
   background: var(--color-ui-surface, #fff);
   border: 2px dashed var(--color-brand-rose, #eba3c2);
   border-radius: var(--radius-lg, 12px);
 
-  /* Always one horizontal line: art, copy, art. */
+  /* Headline over the van, both centered. */
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: clamp(0.5rem, 2vw, 1.25rem);
+  gap: 0.75rem;
 
   p {
     margin: 0;
   }
 
-  .coming-soon-copy {
-    text-align: center;
-  }
-
   .coming-soon-label {
-    font-size: clamp(1rem, 3.2vw, 1.45rem);
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    line-height: 1.2;
-    text-transform: uppercase;
-    color: var(--color-brand-crimson, #d33041);
-  }
-
-  .coming-soon-name {
+    font-size: clamp(1.6rem, 6.9vw, 4rem);
+    /* Same treatment as app-section's .section-heading ("Services We Offer"). */
     font-family: var(--font-display, 'Cinzel', serif);
-    font-size: clamp(0.95rem, 2.6vw, 1.35rem);
-    line-height: 1.25;
-    color: var(--color-brand-rosewood, #8e5a5a);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    white-space: nowrap;
+    color: var(--color-brand-crimson, #d33041);
+    /* Trailing letter-spacing would push the text off-center against the van. */
+    margin-right: -0.02em;
   }
 
-  /* Sized by height so the two vans read as a matched pair despite
-     different aspect ratios. */
+  /* Full card width so the van's lettering and phone number stay readable. */
   .coming-soon-art {
-    flex: 0 0 auto;
-    height: clamp(48px, 11vw, 88px);
-    width: auto;
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md, 8px);
+  }
+}
+
+.investigations-credit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+
+  .credit-line {
+    color: var(--color-ui-text, #2a1f22);
+  }
+
+  /* The logo is a white-background JPEG and the page ends on rose, so it sits on
+     a white card rather than a white rectangle floating on the gradient. */
+  .credit-logo {
+    display: block;
+    width: min(240px, 70%);
+    height: auto;
+    padding: 0.5rem;
+    background: var(--color-ui-surface, #fff);
+    border-radius: var(--radius-md, 8px);
+  }
+
+  .credit-license {
+    font-size: 0.8rem;
+    color: var(--color-ui-text-muted, #8e5a5a);
   }
 }
