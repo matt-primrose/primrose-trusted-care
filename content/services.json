@@ -100,7 +100,17 @@
   "comingSoon": [
     {
       "id": "safe-ride",
-      "name": "Primrose Trusted Safe Ride"
+      "name": "Primrose Trusted Safe Ride",
+      "images": [
+        {
+          "src": "/brand-assets/ptc-safe-ride-side.png",
+          "alt": "The Primrose Trusted Safe Ride van, side view, with children buckled in and a driver at the wheel"
+        },
+        {
+          "src": "/brand-assets/ptc-safe-ride-back.png",
+          "alt": "The back of the Primrose Trusted Safe Ride van, with children waving from the rear window"
+        }
+      ]
     }
   ]
 }

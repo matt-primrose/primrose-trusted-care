@@ -31,7 +31,8 @@
               {
                 "glob": "**/*",
                 "input": "../brand-assets",
-                "output": "brand-assets"
+                "output": "brand-assets",
+                "ignore": ["ptsf_*.png"]
               }
             ],
             "styles": ["src/styles.scss"],

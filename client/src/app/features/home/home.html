@@ -114,14 +114,30 @@
   <p class="centered">
     <a routerLink="/services" class="btn primary">See all services</a>
   </p>
-  @if (comingSoon().length > 0) {
+  @for (item of comingSoon(); track item.id) {
     <div class="coming-soon-banner">
-      <p class="coming-soon-label">Coming Soon</p>
-      <p class="coming-soon-names">
-        @for (item of comingSoon(); track item.id) {
-          <span class="coming-soon-name">{{ item.name }}</span>
-        }
-      </p>
+      @if (item.images?.[0]; as art) {
+        <img
+          class="coming-soon-art art-left"
+          [src]="art.src"
+          [alt]="art.alt"
+          loading="lazy"
+          decoding="async"
+        />
+      }
+      <div class="coming-soon-copy">
+        <p class="coming-soon-label">Coming Soon</p>
+        <p class="coming-soon-name">{{ item.name }}</p>
+      </div>
+      @if (item.images?.[1]; as art) {
+        <img
+          class="coming-soon-art art-right"
+          [src]="art.src"
+          [alt]="art.alt"
+          loading="lazy"
+          decoding="async"
+        />
+      }
     </div>
   }
 </app-section>
